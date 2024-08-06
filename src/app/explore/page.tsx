@@ -3,8 +3,8 @@ import HistoryCard from "./components/HistoryCard";
 import ChatbotCard from "./components/ChatbotCard";
 export default function Explore() {
   return (
-    <Container sx={{display: "flex", flexDirection:"column", height:"100vh"}}>
-      <Box sx={{flexGrow:1}}>
+    <Container sx={{display: "flex", flexDirection:"column", height:"100vh", maxWidth:"900px"}} maxWidth={false}>
+      <Box sx={{flexGrow:1, p:2}}>
         <Typography sx={{mb:8, fontWeight: 'bold', color:"white"}} variant="h4">Explore</Typography>
 
         <Stack spacing={8}>
@@ -17,7 +17,7 @@ export default function Explore() {
 
 
 
-      <Box mb={2}>
+      <Box p={2}>
         <Box sx={{display: "flex", justifyContent:"space-between", alignItems:"center"}}>
           <Typography sx={{fontWeight: 'bold', color:"white"}} variant="h4">History</Typography>
           <Typography sx={{fontWeight: 'light', color:"white", textDecoration: "underline"}}>See all</Typography>

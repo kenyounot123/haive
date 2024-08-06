@@ -85,7 +85,7 @@ export default function Explore() {
 
   return (
     <Container
-      sx={{ display: "flex", flexDirection: "column", height: "100vh" }}
+      sx={{ display: "flex", flexDirection: "column", height: "100vh",maxWidth:"900px" }} maxWidth={false}
     >
       <Box
         component="nav"
