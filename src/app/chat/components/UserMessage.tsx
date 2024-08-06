@@ -42,6 +42,7 @@ export function UserMessage({
             backgroundColor: "black",
           }}
           src={user.photoURL}
+          slotProps={{ img: { referrerPolicy: "no-referrer" } }}
         >
           {/* <HiveRounded
                 sx={{

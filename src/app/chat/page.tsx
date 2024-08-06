@@ -19,8 +19,10 @@ import { useRouter } from "next/navigation";
 import { BotMessage } from "@/app/chat/components/BotMessage";
 import { UserMessage } from "@/app/chat/components/UserMessage";
 import { useAuth } from "@/app/providers";
+import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
+import "overlayscrollbars/overlayscrollbars.css";
 
-export default function Explore() {
+export default function ChatPage() {
   const router = useRouter();
   const { user } = useAuth();
   const [messages, setMessages] = useState([
@@ -34,13 +36,24 @@ export default function Explore() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
+  // const EnterKeyDetector = () => {
+  //   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  //     if (event.key === 'Enter') {
+  //       sendMessage();
+  //     }
+  //   };
+
   const scrollToBottom = () => {
-    (messagesEndRef.current as HTMLElement | null)?.scrollIntoView({
-      behavior: "smooth",
-    });
+    console.log("scrolling");
+
+    setTimeout(() => {
+      (messagesEndRef.current as HTMLElement | null)?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 100);
   };
 
-  const sendMessage = async () => {
+  const sendMessage = () => {
     if (!message.trim() || isLoading) return;
     setIsLoading(true);
 
@@ -52,48 +65,48 @@ export default function Explore() {
       { role: "assistant", content: "" }, // Add a placeholder for the assistant's response
     ]);
 
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify([...messages, { role: "user", content: message }]),
-      });
+    // try {
+    //   const response = await fetch("/api/chat", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify([...messages, { role: "user", content: message }]),
+    //   });
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
+    //   if (!response.ok) {
+    //     throw new Error("Network response was not ok");
+    //   }
 
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
+    //   const reader = response.body?.getReader();
+    //   const decoder = new TextDecoder();
 
-      while (true) {
-        const { done, value } = await (
-          reader as ReadableStreamDefaultReader
-        ).read();
-        if (done) break;
-        const text = decoder.decode(value, { stream: true });
-        setMessages((messages) => {
-          let lastMessage = messages[messages.length - 1];
-          let otherMessages = messages.slice(0, messages.length - 1);
-          return [
-            ...otherMessages,
-            { ...lastMessage, content: lastMessage.content + text },
-          ];
-        });
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setMessages((messages) => [
-        ...messages,
-        {
-          role: "assistant",
-          content:
-            "I'm sorry, but I encountered an error. Please try again later.",
-        },
-      ]);
-    }
+    //   while (true) {
+    //     const { done, value } = await (
+    //       reader as ReadableStreamDefaultReader
+    //     ).read();
+    //     if (done) break;
+    //     const text = decoder.decode(value, { stream: true });
+    //     setMessages((messages) => {
+    //       let lastMessage = messages[messages.length - 1];
+    //       let otherMessages = messages.slice(0, messages.length - 1);
+    //       return [
+    //         ...otherMessages,
+    //         { ...lastMessage, content: lastMessage.content + text },
+    //       ];
+    //     });
+    //   }
+    // } catch (error) {
+    // console.error("Error:", error);
+    // setMessages((messages) => [
+    //   ...messages,
+    //   {
+    //     role: "assistant",
+    //     content:
+    //       "I'm sorry, but I encountered an error. Please try again later.",
+    //   },
+    // ]);
+    // }
     setIsLoading(false);
   };
 
@@ -139,45 +152,62 @@ export default function Explore() {
 
       <Stack
         direction={"column"}
-        p={2}
+        p={0}
         spacing={3}
         sx={{
           backgroundColor: "secondary.main",
           flexGrow: 1,
+          overflowY: "auto",
           borderRadius: "10px",
           boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.75)",
         }}
       >
-        <Stack
-          direction={"column"}
-          spacing={2}
-          flexGrow={1}
-          overflow="auto"
-          maxHeight="100%"
-        >
-          {messages.map((message, index) => (
-            <Box
-              key={index}
-              display="flex"
-              justifyContent={
-                message.role === "assistant" ? "flex-start" : "flex-end"
-              }
-            >
-              {message.role === "assistant" ? (
-                <BotMessage message={message.content} bot={{ name: "Bot", id: 1, description:"", created_at: new Date(), updated_at: new Date() }} />
-              ) : (
-                <UserMessage
-                  message={message.content}
-                  user={user}
-                />
-              )}
-            </Box>
-          ))}
-          <div ref={messagesEndRef} />
-        </Stack>
+        <OverlayScrollbarsComponent defer>
+          <Stack
+            id="chat-box"
+            direction={"column"}
+            spacing={2}
+            flexGrow={1}
+            maxHeight="100%"
+            sx={{
+              p: 2,
+            }}
+          >
+            {messages.map((message, index) => (
+              <Box
+                key={index}
+                display="flex"
+                justifyContent={
+                  message.role === "assistant" ? "flex-start" : "flex-end"
+                }
+              >
+                {message.role === "assistant" ? (
+                  <BotMessage
+                    message={message.content}
+                    bot={{
+                      name: "Bot",
+                      id: 1,
+                      description: "",
+                      created_at: new Date(),
+                      updated_at: new Date(),
+                    }}
+                  />
+                ) : (
+                  <UserMessage message={message.content} user={user} />
+                )}
+              </Box>
+            ))}
+            <div ref={messagesEndRef} />
+          </Stack>
+        </OverlayScrollbarsComponent>
       </Stack>
 
       <Box
+        component={"form"}
+        onSubmit={(e) => {
+          e.preventDefault();
+          sendMessage();
+        }}
         sx={{
           display: "flex",
           gap: 1,
