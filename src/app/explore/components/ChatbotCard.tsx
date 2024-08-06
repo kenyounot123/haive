@@ -1,6 +1,8 @@
 import { Box, Typography } from "@mui/material"
 import EastIcon from '@mui/icons-material/East';
 import WestIcon from '@mui/icons-material/West';
+import Link from "next/link";
+
 interface HexagonProps {
   chatbotName: string
 }
@@ -62,16 +64,18 @@ export default function ChatbotCard({reverse=false}:ChatbotCardProps) {
           <Hexagon chatbotName={"ChefAI"}/>
         </Box>
         {/* This is clickable */}
-        <Box sx={{ p:1, border: '1px solid', borderColor: 'primary.main', borderRadius:3, backgroundColor:"black", maxWidth:"80%", mx:'auto',transition: 'background-color 0.3s ease',cursor: 'pointer',
-          '&:hover': {
-            backgroundColor: '#1E1E1E',
-          },
-        }}>
-          <Typography sx={{color: "white", fontSize:24, textWrap:"wrap", maxWidth:"80%", ml:8}}>Chatbot for your culinary needs!</Typography>
-          <Box sx={{display: "flex", justifyContent:"flex-end"}}>
-            <EastIcon sx={{color: "primary.main"}}/>
+        <Link href={"/chat"}>
+          <Box sx={{ p:1, border: '1px solid', borderColor: 'primary.main', borderRadius:3, backgroundColor:"black", maxWidth:"80%", mx:'auto',transition: 'background-color 0.3s ease',cursor: 'pointer',
+            '&:hover': {
+              backgroundColor: '#1E1E1E',
+            },
+          }}>
+            <Typography sx={{color: "white", fontSize:24, textWrap:"wrap", maxWidth:"80%", ml:8}}>Chatbot for your culinary needs!</Typography>
+            <Box sx={{display: "flex", justifyContent:"flex-end"}}>
+              <EastIcon sx={{color: "primary.main"}}/>
+            </Box>
           </Box>
-        </Box>
+        </Link>
       </Box>
       )}
     </>
