@@ -1,9 +1,23 @@
 "use client";
 
-import { Typography, Box, Container, TextField, Button, Stack } from "@mui/material";
-import { ArrowBackRounded, Send, SendRounded } from "@mui/icons-material";
+import {
+  Typography,
+  Box,
+  Container,
+  TextField,
+  Button,
+  Stack,
+  Avatar,
+} from "@mui/material";
+import {
+  ArrowBackRounded,
+  SendRounded,
+  HiveRounded,
+} from "@mui/icons-material";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { BotMessage } from "@/app/chat/components/BotMessage";
+import { UserMessage } from "@/app/chat/components/UserMessage";
 
 export default function Explore() {
   const router = useRouter();
@@ -49,11 +63,13 @@ export default function Explore() {
         throw new Error("Network response was not ok");
       }
 
-      const reader = response.body.getReader();
+      const reader = response.body?.getReader();
       const decoder = new TextDecoder();
 
       while (true) {
-        const { done, value } = await reader.read();
+        const { done, value } = await (
+          reader as ReadableStreamDefaultReader
+        ).read();
         if (done) break;
         const text = decoder.decode(value, { stream: true });
         setMessages((messages) => {
@@ -85,7 +101,13 @@ export default function Explore() {
 
   return (
     <Container
-      sx={{ display: "flex", flexDirection: "column", height: "100vh",maxWidth:"900px" }} maxWidth={false}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        maxWidth: "900px",
+      }}
+      maxWidth={false}
     >
       <Box
         component="nav"
@@ -139,20 +161,14 @@ export default function Explore() {
                 message.role === "assistant" ? "flex-start" : "flex-end"
               }
             >
-              <Box
-                bgcolor={
-                  message.role === "assistant"
-                    ? "white"
-                    : "primary.main"
-                }
-                color="black"
-                sx={{
-                  p: 2,
-                  borderRadius: "12px",
-                }}
-              >
-                {message.content}
-              </Box>
+              {message.role === "assistant" ? (
+                <BotMessage message={message.content} bot={{ name: "Bot", id: 1, description:"", created_at: new Date(), updated_at: new Date() }} />
+              ) : (
+                <UserMessage
+                  message={message.content}
+                  user={{ name: "User", id: "1" }}
+                />
+              )}
             </Box>
           ))}
           <div ref={messagesEndRef} />
@@ -163,7 +179,7 @@ export default function Explore() {
         sx={{
           display: "flex",
           gap: 1,
-          py: 4,
+          py: 3,
         }}
       >
         <TextField
