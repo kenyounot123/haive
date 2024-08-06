@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
-import { ThemeProvider } from '@mui/material/styles';
-import theme from '../../theme'
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "../../theme";
+import Background from "./background";
 import "./globals.css";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Haive | The Ultimate AI Chatbot",
-  description: "Discover the ultimate AI chatbot experience with Haive where expert HiveBots provide instant, specialized insights just for you",
+  description:
+    "Discover the ultimate AI chatbot experience with Haive where expert HiveBots provide instant, specialized insights just for you",
 };
 
 export default function RootLayout({
@@ -19,7 +21,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <ThemeProvider theme={theme}>
-        <body className={outfit.className}>{children}</body>
+        <body className={outfit.className}>
+          <Background>{children}</Background>
+        </body>
       </ThemeProvider>
     </html>
   );
