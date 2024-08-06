@@ -53,7 +53,7 @@ export default function ChatbotCard({reverse=false}:ChatbotCardProps) {
                 backgroundColor: '#1E1E1E',
               },
             }}>
-              <Typography sx={{color: "white", fontSize:24, textWrap:"wrap", maxWidth:"80%", ml:6}}>Chatbot for your culinary needs!</Typography>
+              <Typography sx={{color: "white", fontSize:24, textWrap:"wrap", maxWidth:"80%"}}>Chatbot for your culinary needs!</Typography>
               <Box sx={{display: "flex", justifyContent:"flex-start"}}>
                 <WestIcon sx={{color: "primary.main"}}/>
               </Box>
