@@ -5,7 +5,7 @@ export default function Explore() {
   return (
     <Container sx={{display: "flex", flexDirection:"column", height:"100vh"}}>
       <Box sx={{flexGrow:1}}>
-        <Typography sx={{fontWeight: 'bold', color:"white"}} variant="h3">Explore</Typography>
+        <Typography sx={{mb:8, fontWeight: 'bold', color:"white"}} variant="h3">Explore</Typography>
         <ChatbotCard/>
       </Box>
 

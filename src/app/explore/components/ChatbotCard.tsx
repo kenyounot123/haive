@@ -1,8 +1,12 @@
-import { Box } from "@mui/material"
-export default function ChatbotCard() {
+import { Box, Typography } from "@mui/material"
+
+interface HexagonProps {
+  chatbotName: string
+}
+const Hexagon = ({chatbotName}: HexagonProps) => {
   return (
     <Box 
-      sx={{position:"relative", width: "104px", height: "60px", backgroundColor: "primary.main"}}
+      sx={{display:"flex", justifyContent:"center", alignItems:"center", position:"relative", width: "104px", height: "60px", backgroundColor: "primary.main"}}
     >
       <Box
       sx={{width: 0,
@@ -13,7 +17,8 @@ export default function ChatbotCard() {
         borderBottom: '30px solid #FFCF00',
         borderLeft: '52px solid transparent',
         borderRight: '52px solid transparent',}}
-      > </Box>
+      /> 
+      <Typography sx={{fontWeight:"bold", fontSize:24}}>{chatbotName}</Typography>
       <Box
       sx={{width: 0,
         height: 0,
@@ -23,7 +28,17 @@ export default function ChatbotCard() {
         borderTop: '30px solid #FFCF00',
         borderLeft: '52px solid transparent',
         borderRight: '52px solid transparent',}}
-      > </Box>
+      />
+    </Box>
+  )
+}
+export default function ChatbotCard() {
+  return (
+    <Box sx={{display: "flex"}}>
+      <Hexagon chatbotName={"ChefAI"}/>
+      <Box sx={{p:3, border: '1px solid', borderColor: 'primary.main', borderRadius:3, backgroundColor:"black"}}>
+        <Typography sx={{color: "white", fontSize:24}}>Chatbot for your culinary needs!</Typography>
+      </Box>
     </Box>
   )
 }
