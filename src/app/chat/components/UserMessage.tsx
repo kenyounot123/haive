@@ -2,8 +2,8 @@
 
 import { Typography, Box, Avatar } from "@mui/material";
 import { HiveRounded } from "@mui/icons-material";
-import { Message } from "@/app/types/message";
-import { User } from "@/app/types/user";
+import { Message } from "@/types/message";
+import { User } from "@/types/user";
 
 export function UserMessage({
   message,
@@ -12,12 +12,15 @@ export function UserMessage({
   message: string; // TODO: replace string with Message type
   user: User;
 }) {
+  console.log(user)
   return (
-    <Box sx={{
+    <Box
+      sx={{
         display: "flex",
         flexDirection: "column",
         gap: 1,
-    }}>
+      }}
+    >
       <Box
         sx={{
           display: "flex",
@@ -28,24 +31,24 @@ export function UserMessage({
         <Typography
           variant="caption"
           sx={{
-              color: "white",
-              fontWeight: "bold",
-            }}
+            color: "white",
+            fontWeight: "bold",
+          }}
         >
-          {/* TODO: replace with bot */}
-          --USER NAME--
+          {user.displayName}
         </Typography>
-            <Avatar
-              sx={{
-                backgroundColor: "black",
-              }}
-            >
-              <HiveRounded
+        <Avatar
+          sx={{
+            backgroundColor: "black",
+          }}
+          src={user.photoURL}
+        >
+          {/* <HiveRounded
                 sx={{
                   color: "primary.main",
                 }}
-              />
-            </Avatar>
+              /> */}
+        </Avatar>
       </Box>
       <Box
         bgcolor={"primary.main"}

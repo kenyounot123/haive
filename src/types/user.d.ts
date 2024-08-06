@@ -1,11 +1,10 @@
+// Google firebase UserImpl
 export interface User {
-    id: string;
-    avatar?: string;
+    uid: string;
+    displayName?: string;
+    photoURL?: string;
     email?: string;
-
-    created_at?: Date;
-    updated_at?: Date;
-    name?: string;
+    
     metadata?: UserMetadata;
 }
 

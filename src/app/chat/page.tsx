@@ -18,9 +18,11 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { BotMessage } from "@/app/chat/components/BotMessage";
 import { UserMessage } from "@/app/chat/components/UserMessage";
+import { useAuth } from "@/app/providers";
 
 export default function Explore() {
   const router = useRouter();
+  const { user } = useAuth();
   const [messages, setMessages] = useState([
     {
       role: "assistant",
@@ -166,7 +168,7 @@ export default function Explore() {
               ) : (
                 <UserMessage
                   message={message.content}
-                  user={{ name: "User", id: "1" }}
+                  user={user}
                 />
               )}
             </Box>

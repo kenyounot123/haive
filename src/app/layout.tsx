@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
-import { ThemeProvider } from "@mui/material/styles";
-import theme from "../../theme";
 import Background from "./background";
+import Providers from "./providers";
 import "./globals.css";
 
 const outfit = Outfit({ subsets: ["latin"] });
@@ -20,11 +19,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <ThemeProvider theme={theme}>
+      <Providers>
         <body className={outfit.className}>
           <Background>{children}</Background>
         </body>
-      </ThemeProvider>
+      </Providers>
     </html>
   );
 }

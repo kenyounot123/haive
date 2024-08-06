@@ -4,8 +4,10 @@ import HistoryCard from "./components/HistoryCard";
 import ChatbotCard from "./components/ChatbotCard";
 import Link from "next/link";
 import { useState } from "react";
+import { useAuth } from "@/app/providers";
+
 export default function Explore() {
-  const [userLoggedIn, setUserLoggedIn] = useState<boolean>(false)
+  const { user } = useAuth();
   return (
     <Container sx={{display: "flex", flexDirection:"column", height:"100vh", maxWidth:"900px"}} maxWidth={false}>
 
@@ -23,19 +25,19 @@ export default function Explore() {
 
       <Box p={2}>
         <Box sx={{position:"relative"}}>
-          <Box sx={{display: "flex", justifyContent:"space-between", alignItems:"center",filter: userLoggedIn ? 'none' : 'blur(8px)'}}>
+          <Box sx={{display: "flex", justifyContent:"space-between", alignItems:"center",filter: user ? 'none' : 'blur(8px)'}}>
             <Typography sx={{fontWeight: 'bold', color:"white"}} variant="h4">History</Typography>
             <Link href="/chat">
               <Typography sx={{fontWeight: 'light', color:"white", textDecoration: "underline"}}>See all</Typography>
             </Link>
           </Box>
           {/* This should be the user's chat history  */}
-          <Box sx={{filter: userLoggedIn ? 'none' : 'blur(5px)'}}>
+          <Box sx={{filter: user ? 'none' : 'blur(5px)'}}>
             <HistoryCard/>
             <HistoryCard/>
             <HistoryCard/>
           </Box>
-          {!userLoggedIn && (
+          {!user && (
             <Box
               sx={{
                 position: 'absolute',

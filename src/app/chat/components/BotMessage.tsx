@@ -8,8 +8,8 @@ import {
 import {
   HiveRounded,
 } from "@mui/icons-material";
-import { Message } from "@/app/types/message";
-import { Bot } from "@/app/types/bot";
+import { Message } from "@/types/message";
+import { Bot } from "@/types/bot";
 
 export function BotMessage({ 
   message, 
