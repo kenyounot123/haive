@@ -39,47 +39,55 @@ const Hexagon = ({chatbotName}: HexagonProps) => {
   )
 }
 export default function ChatbotCard({reverse=false}:ChatbotCardProps) {
+  const iconStyles = {
+    color: 'primary.main',
+  };
   return (
     <>
-      {reverse ? (
-        <Box sx={{position:"relative"}}>
-          <Box sx={{position: "absolute", right: 0, top: 0, transform: "translateY(-20px)"}}>
-            <Hexagon chatbotName={"ChefAI"}/>
-          </Box>
-          {/* This is clickable */}
-          <Link href={"/chat"}>
-            <Box sx={{ p:1, border: '1px solid', borderColor: 'primary.main', borderRadius:3, backgroundColor:"black", maxWidth:"80%", mx:'auto', transition: 'background-color 0.3s ease', cursor: 'pointer',
-              '&:hover': {
-                backgroundColor: '#1E1E1E',
-              },
-            }}>
-              <Typography sx={{color: "white", fontSize:24, textWrap:"wrap", maxWidth:"80%"}}>Chatbot for your culinary needs!</Typography>
-              <Box sx={{display: "flex", justifyContent:"flex-start"}}>
-                <WestIcon sx={{color: "primary.main"}}/>
-              </Box>
-            </Box>
-          </Link>
-        </Box>
-      ) : (
       <Box sx={{position:"relative"}}>
-        <Box sx={{position: "absolute", transform: "translateY(-20px)"}}>
+        <Box sx={{
+          position: "absolute",
+          right: reverse ? 0 : undefined,
+          top: reverse ? 0 : undefined,
+          transform: "translateY(-20px)"
+          }}>
           <Hexagon chatbotName={"ChefAI"}/>
         </Box>
         {/* This is clickable */}
-        <Link href={"/chat"}>
-          <Box sx={{ p:1, border: '1px solid', borderColor: 'primary.main', borderRadius:3, backgroundColor:"black", maxWidth:"80%", mx:'auto',transition: 'background-color 0.3s ease',cursor: 'pointer',
-            '&:hover': {
-              backgroundColor: '#1E1E1E',
-            },
-          }}>
-            <Typography sx={{color: "white", fontSize:24, textWrap:"wrap", maxWidth:"80%", ml:8}}>Chatbot for your culinary needs!</Typography>
-            <Box sx={{display: "flex", justifyContent:"flex-end"}}>
-              <EastIcon sx={{color: "primary.main"}}/>
+ 
+        <Box sx={{ 
+          p:1, 
+          border: '1px solid', 
+          borderColor: 'primary.main', 
+          borderRadius:3, 
+          backgroundColor:"black", 
+          width:"80%", 
+          mx:'auto', 
+          transition: 'background-color 0.3s ease', 
+          cursor: 'pointer',
+          '&:hover': {
+            backgroundColor: '#1E1E1E',
+          },
+        }}>
+          <Link href={"/chat"}>
+            <Typography sx={{
+              color: "white",
+              fontSize:24,
+              textWrap:"wrap",
+              maxWidth:"80%",
+              ml: {
+                xs: reverse ? 4 : 8,
+                lg: reverse ? 8 : 8
+              }
+              }}>Chatbot for your culinary needs!</Typography>
+            <Box sx={{
+              display: "flex",
+              justifyContent: reverse ? 'flex-start' : 'flex-end'}}>
+                {reverse ? <WestIcon sx={iconStyles} /> : <EastIcon sx={iconStyles} />}
             </Box>
-          </Box>
-        </Link>
+          </Link>
+        </Box>
       </Box>
-      )}
     </>
   )
 }
