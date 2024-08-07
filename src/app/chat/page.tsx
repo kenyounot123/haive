@@ -25,6 +25,7 @@ import "overlayscrollbars/overlayscrollbars.css";
 export default function ChatPage() {
   const router = useRouter();
   const { user } = useAuth();
+  console.log(user)
   const [messages, setMessages] = useState([
     {
       role: "assistant",

@@ -9,7 +9,7 @@ import { useAuth } from "@/app/providers";
 export default function Explore() {
   const { user } = useAuth();
   return (
-    <Container sx={{display: "flex", flexDirection:"column", height:"100vh", maxWidth:"900px"}} maxWidth={false}>
+    <Container sx={{display: "flex", flexDirection:"column", maxWidth:"900px"}} maxWidth={false}>
 
 
       <Box sx={{flexGrow:1, p:2}}>

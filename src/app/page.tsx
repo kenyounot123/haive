@@ -9,7 +9,7 @@ export default function LandingPage() {
   const { user, signInWithGoogle } = useAuth();
 
   function handleSignIn() {
-    signInWithGoogle().then(() => router.push("/"));
+    signInWithGoogle().then(() => router.push("/explore"));
   }
 
   return (
