@@ -10,14 +10,24 @@ import {
 } from "@mui/icons-material";
 import { Message } from "@/types/message";
 import { Bot } from "@/types/bot";
+import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
+import { Dispatch, SetStateAction } from 'react';
 
 export function BotMessage({ 
+  messageLiked,
+  setMessageLiked,
   message, 
   bot 
 }: { 
+  messageLiked: boolean;
+  setMessageLiked: Dispatch<SetStateAction<boolean>>;
   message: string; // TODO: replace string with Message type
   bot: Bot 
 }) {
+
+  const toggleLikeMessage = () => {
+    messageLiked ? setMessageLiked(false) : setMessageLiked(true) 
+  }
   return (
     <Box sx={{
       display: "flex",
@@ -61,7 +71,17 @@ export function BotMessage({
           borderRadius: "15px",
         }}
       >
-        {message}
+        <Typography>{message}</Typography>
+        <Box 
+          sx={{display: "flex", justifyContent:"flex-end"}}
+        >
+          {message && <ThumbUpOffAltIcon onClick={toggleLikeMessage} sx={{transition: 'color 0.3s, transform 0.3s',
+            color: messageLiked ? "primary.main" : "black",
+            '&:hover': {
+              color: "primary.main", // Change color on hover
+              transform: 'scale(1.1)', // Slightly enlarge on hover
+            }, }}/>}
+        </Box>
       </Box>
     </Box>
   );

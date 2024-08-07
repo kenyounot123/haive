@@ -25,7 +25,6 @@ import "overlayscrollbars/overlayscrollbars.css";
 export default function ChatPage() {
   const router = useRouter();
   const { user } = useAuth();
-  console.log(user)
   const [messages, setMessages] = useState([
     {
       role: "assistant",
@@ -35,6 +34,7 @@ export default function ChatPage() {
   ]);
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [messageLiked, setMessageLiked] = useState(false)
   const messagesEndRef = useRef(null);
 
   // const EnterKeyDetector = () => {
@@ -53,6 +53,10 @@ export default function ChatPage() {
       });
     }, 100);
   };
+
+  const toggleLikeMessage = () => {
+    message ? setMessageLiked(false) : setMessageLiked(true)
+  }
 
   const sendMessage = () => {
     if (!message.trim() || isLoading) return;
@@ -184,6 +188,8 @@ export default function ChatPage() {
               >
                 {message.role === "assistant" ? (
                   <BotMessage
+                    messageLiked={messageLiked}
+                    setMessageLiked={setMessageLiked}
                     message={message.content}
                     bot={{
                       name: "Bot",
