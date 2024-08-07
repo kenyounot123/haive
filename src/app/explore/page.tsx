@@ -33,9 +33,9 @@ export default function Explore() {
           </Box>
           {/* This should be the user's chat history  */}
           <Box sx={{filter: user ? 'none' : 'blur(5px)'}}>
-            <HistoryCard/>
-            <HistoryCard/>
-            <HistoryCard/>
+            <HistoryCard chatTitle="UI/UX Design for new era"/>
+            <HistoryCard chatTitle="UI/UX Design for new era"/>
+            <HistoryCard chatTitle="UI/UX Design for new era"/>
           </Box>
           {!user && (
             <Box

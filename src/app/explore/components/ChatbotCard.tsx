@@ -73,7 +73,7 @@ export default function ChatbotCard({reverse=false, chatbotLikes, chatbotName}:C
           transition: 'background-color 0.3s ease', 
           cursor: 'pointer',
           '&:hover': {
-            backgroundColor: '#1E1E1E',
+            backgroundColor: 'secondary.main',
           },
         }}>
           <Link href={"/chat"}>
