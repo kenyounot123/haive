@@ -16,9 +16,9 @@ export default function Explore() {
         <Typography sx={{mb:8, fontWeight: 'bold', color:"white"}} variant="h4">Explore</Typography>
 
         <Stack spacing={8}>
-          <ChatbotCard reverse={false}/>
-          <ChatbotCard reverse={true}/>
-          <ChatbotCard reverse={false}/>
+          <ChatbotCard chatbotLikes={5} chatbotName={"ChefAI"} reverse={false}/>
+          <ChatbotCard chatbotLikes={5} chatbotName={"ChefAI"} reverse={true}/>
+          <ChatbotCard chatbotLikes={5} chatbotName={"ChefAI"} reverse={false}/>
         </Stack>
       </Box>
 

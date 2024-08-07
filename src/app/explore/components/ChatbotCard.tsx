@@ -2,17 +2,21 @@ import { Box, Typography } from "@mui/material"
 import EastIcon from '@mui/icons-material/East';
 import WestIcon from '@mui/icons-material/West';
 import Link from "next/link";
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 
 interface HexagonProps {
-  chatbotName: string
+  chatbotName: string,
+  chatbotLikes: number,
 }
 interface ChatbotCardProps {
-  reverse: boolean
+  reverse: boolean,
+  chatbotName: string,
+  chatbotLikes: number,
 }
-const Hexagon = ({chatbotName}: HexagonProps) => {
+const Hexagon = ({chatbotName, chatbotLikes}: HexagonProps) => {
   return (
     <Box 
-      sx={{display:"flex", justifyContent:"center", alignItems:"center", position:"relative", width: "104px", height: "60px", backgroundColor: "primary.main"}}
+      sx={{display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", position:"relative", width: "104px", height: "60px", backgroundColor: "primary.main"}}
     >
       <Box
       sx={{width: 0,
@@ -25,6 +29,9 @@ const Hexagon = ({chatbotName}: HexagonProps) => {
         borderRight: '52px solid transparent',}}
       /> 
       <Typography sx={{fontWeight:"bold", fontSize:24}}>{chatbotName}</Typography>
+      <Typography sx={{fontWeight:900, fontSize:24}}>
+        {chatbotLikes}<ThumbUpAltIcon/>
+      </Typography>
       <Box
       sx={{width: 0,
         height: 0,
@@ -38,7 +45,7 @@ const Hexagon = ({chatbotName}: HexagonProps) => {
     </Box>
   )
 }
-export default function ChatbotCard({reverse=false}:ChatbotCardProps) {
+export default function ChatbotCard({reverse=false, chatbotLikes, chatbotName}:ChatbotCardProps) {
   const iconStyles = {
     color: 'primary.main',
   };
@@ -51,7 +58,7 @@ export default function ChatbotCard({reverse=false}:ChatbotCardProps) {
           top: reverse ? 0 : undefined,
           transform: "translateY(-20px)"
           }}>
-          <Hexagon chatbotName={"ChefAI"}/>
+          <Hexagon chatbotLikes={chatbotLikes} chatbotName={chatbotName}/>
         </Box>
         {/* This is clickable */}
  
