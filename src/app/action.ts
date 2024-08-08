@@ -12,10 +12,11 @@ export async function saveUserToDatabase(user: User) {
   }, { merge: true });
 }
 
-export async function createExploreChatbot(chatbotName:string, likes:number, messages?:string) {
+export async function createExploreChatbot(chatbotName:string, likes:number, description:string, messages?:string) {
   await setDoc(doc(db,"chatbots", chatbotName), {
     name: chatbotName,
     likes: likes,
+    description: description,
     ...(messages && { messages }),
   })
 }

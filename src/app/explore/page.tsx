@@ -22,13 +22,19 @@ export default function Explore() {
   const [loading, setLoading] = useState<boolean>(true)
   useEffect(() => {
     const fetchAllChatBots = async () => {
-      const querySnapshot = await getAllExploreChatbots()
-      const chatbotsData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      setChatbots(chatbotsData)
-      setLoading(false)
+      try {
+        const querySnapshot = await getAllExploreChatbots();
+        const chatbotsData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setChatbots(chatbotsData);
+      } catch (error) {
+        console.error('Error fetching chatbots:', error);
+        // You can set an error state here if you want to display an error message to the user
+      } finally {
+        setLoading(false);
+      }
     }
 
     fetchAllChatBots()
@@ -45,8 +51,9 @@ export default function Explore() {
 
         <Stack spacing={8}>
           {/* Displays all chatbots */}
-          {loading ? <LoadingScreen/> : chatBots.map((chatbot: { id: string; likes: number; name: string; }, index:number) => (
-            <ChatbotCard key={chatbot.id} chatbotLikes={chatbot.likes} chatbotName={chatbot.name} reverse={index % 2 ? true : false}/>
+          {loading && <LoadingScreen/>}
+          {!loading && chatBots && chatBots.map((chatbot: { id: string; likes: number; name: string; description: string }, index:number) => (
+            <ChatbotCard key={chatbot.id} chatbotDescription={chatbot.description} chatbotLikes={chatbot.likes} chatbotName={chatbot.name} reverse={index % 2 ? true : false}/>
           ))}
         </Stack>
       </Box>
@@ -56,7 +63,8 @@ export default function Explore() {
         <Box sx={{position:"relative"}}>
           <Box sx={{display: "flex", justifyContent:"space-between", alignItems:"center",filter: user ? 'none' : 'blur(8px)'}}>
             <Typography sx={{fontWeight: 'bold', color:"white"}} variant="h4">History</Typography>
-            <Link href="/chat">
+            {/* Not sure where this should redirect to yet */}
+            <Link href="/chat/chefai">
               <Typography sx={{fontWeight: 'light', color:"white", textDecoration: "underline"}}>See all</Typography>
             </Link>
           </Box>
@@ -87,6 +95,7 @@ export default function Explore() {
                   fontSize: 32, // Increase font size
                   padding: '12px 32px', // Increase padding for height and width
                   borderRadius: "12px",
+                  color: "white",
                 }} variant="outlined">
                   Log In
                 </Button>

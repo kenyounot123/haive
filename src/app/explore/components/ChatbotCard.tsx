@@ -12,6 +12,7 @@ interface ChatbotCardProps {
   reverse: boolean,
   chatbotName: string,
   chatbotLikes: number,
+  chatbotDescription: string
 }
 const Hexagon = ({chatbotName, chatbotLikes}: HexagonProps) => {
   return (
@@ -45,7 +46,7 @@ const Hexagon = ({chatbotName, chatbotLikes}: HexagonProps) => {
     </Box>
   )
 }
-export default function ChatbotCard({reverse=false, chatbotLikes, chatbotName}:ChatbotCardProps) {
+export default function ChatbotCard({reverse=false, chatbotLikes, chatbotName, chatbotDescription}:ChatbotCardProps) {
   const iconStyles = {
     color: 'primary.main',
   };
@@ -76,7 +77,7 @@ export default function ChatbotCard({reverse=false, chatbotLikes, chatbotName}:C
             backgroundColor: 'secondary.main',
           },
         }}>
-          <Link href={"/chat"}>
+          <Link href={`/chat/${chatbotName}`}>
             <Typography sx={{
               color: "white",
               fontSize:24,
@@ -86,7 +87,7 @@ export default function ChatbotCard({reverse=false, chatbotLikes, chatbotName}:C
                 xs: reverse ? 4 : 8,
                 lg: reverse ? 8 : 8
               }
-              }}>Chatbot for your culinary needs!</Typography>
+              }}>{chatbotDescription}</Typography>
             <Box sx={{
               display: "flex",
               justifyContent: reverse ? 'flex-start' : 'flex-end'}}>
