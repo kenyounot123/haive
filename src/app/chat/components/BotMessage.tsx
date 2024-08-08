@@ -12,6 +12,7 @@ import { Message } from "@/types/message";
 import { Bot } from "@/types/bot";
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import { Dispatch, SetStateAction } from 'react';
+import { useAuth } from "@/context/auth-context";
 
 export function BotMessage({ 
   messageLiked,
@@ -24,7 +25,7 @@ export function BotMessage({
   message: string; // TODO: replace string with Message type
   bot: Bot 
 }) {
-
+  const { user } = useAuth()
   const toggleLikeMessage = () => {
     messageLiked ? setMessageLiked(false) : setMessageLiked(true) 
   }
@@ -75,7 +76,7 @@ export function BotMessage({
         <Box 
           sx={{display: "flex", justifyContent:"flex-end"}}
         >
-          {message && <ThumbUpOffAltIcon onClick={toggleLikeMessage} sx={{transition: 'color 0.3s, transform 0.3s',
+          {message && user && <ThumbUpOffAltIcon onClick={toggleLikeMessage} sx={{transition: 'color 0.3s, transform 0.3s',
             color: messageLiked ? "primary.main" : "black",
             '&:hover': {
               color: "primary.main", // Change color on hover

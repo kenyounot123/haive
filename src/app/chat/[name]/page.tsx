@@ -23,7 +23,20 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import "overlayscrollbars/overlayscrollbars.css";
 
 export default function ChatPage({ params }: { params: { name: string } }) {
-
+  // Assume user is logged in => user is authenticated on the server in the request to this page
+  // if successful
+  //    read from db to get the convo in history with this chatbot 
+  //   ( this will look something like user_collection -> user_doc(id) -> history_collection -> history_doc(id) where history.chatbotName === params.name )
+  //    the previous messages for this convo will be rendered
+  // else 
+  //    we are redirected to this page with no messages
+  //   ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  // Assume user is not logged in => this is a chat convo with no messages.
+  // user messages with chatbot storing messages in some type of array []
+  // if user decides to log in to an account 
+  //      From the params we get the Name of the chatbot. (This acts like an ID) 
+  //      create a Conversation using the chatbotName and the messages array and save to that user doc's history colelction
+  //
   const router = useRouter();
   const { user } = useAuth();
   const [messages, setMessages] = useState([
@@ -53,10 +66,6 @@ export default function ChatPage({ params }: { params: { name: string } }) {
       });
     }, 100);
   };
-
-  const toggleLikeMessage = () => {
-    message ? setMessageLiked(false) : setMessageLiked(true)
-  }
 
   const sendMessage = () => {
     if (!message.trim() || isLoading) return;

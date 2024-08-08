@@ -35,21 +35,21 @@ export function UserMessage({
             fontWeight: "bold",
           }}
         >
-          {user.displayName}
+          {user ? user.displayName : "Guest"}
         </Typography>
-        <Avatar
-          sx={{
-            backgroundColor: "black",
-          }}
-          src={user.photoURL}
-          slotProps={{ img: { referrerPolicy: "no-referrer" } }}
-        >
-          {/* <HiveRounded
-                sx={{
-                  color: "primary.main",
-                }}
-              /> */}
-        </Avatar>
+        {user ? 
+          <Avatar
+            sx={{
+              backgroundColor: "black",
+            }}
+            src={user.photoURL}
+            slotProps={{ img: { referrerPolicy: "no-referrer" } }}
+          /> 
+        : <HiveRounded
+            sx={{
+              color: "primary.main",
+            }}
+          />}
       </Box>
       <Box
         bgcolor={"primary.main"}
