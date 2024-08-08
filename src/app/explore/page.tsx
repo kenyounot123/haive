@@ -3,11 +3,25 @@ import { Typography, Box, Container, Stack, Button } from "@mui/material";
 import HistoryCard from "./components/HistoryCard";
 import ChatbotCard from "./components/ChatbotCard";
 import Link from "next/link";
-import { useState } from "react";
 import { useAuth } from "@/app/providers";
+import { Key, useEffect, useState } from "react";
+import { getAllExploreChatbots } from "../action";
 
 export default function Explore() {
   const { user } = useAuth();
+  const [chatBots, setChatbots] = useState<any>(null)
+  useEffect(() => {
+    const fetchAllChatBots = async () => {
+      const querySnapshot = await getAllExploreChatbots()
+      const chatbotsData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      setChatbots(chatbotsData)
+    }
+
+    fetchAllChatBots()
+  },[])
   return (
     <Container sx={{display: "flex", flexDirection:"column", maxWidth:"900px"}} maxWidth={false}>
 
@@ -16,9 +30,10 @@ export default function Explore() {
         <Typography sx={{mb:8, fontWeight: 'bold', color:"white"}} variant="h4">Explore</Typography>
 
         <Stack spacing={8}>
-          <ChatbotCard chatbotLikes={5} chatbotName={"ChefAI"} reverse={false}/>
-          <ChatbotCard chatbotLikes={5} chatbotName={"ChefAI"} reverse={true}/>
-          <ChatbotCard chatbotLikes={5} chatbotName={"ChefAI"} reverse={false}/>
+          {/* Displays all chatbots */}
+          {chatBots.map((chatbot: { id: string; likes: number; name: string; }, index:number) => (
+            <ChatbotCard key={chatbot.id} chatbotLikes={chatbot.likes} chatbotName={chatbot.name} reverse={index % 2 ? true : false}/>
+          ))}
         </Stack>
       </Box>
 
