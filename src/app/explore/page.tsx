@@ -6,10 +6,16 @@ import Link from "next/link";
 import { useAuth } from "@/app/providers";
 import { Key, useEffect, useState } from "react";
 import { getAllExploreChatbots } from "../action";
+const LoadingScreen = () => {
+  return (
+    <Typography variant="h2" color={"white"}>Finding chatbots...</Typography>
+  )
+}
 
 export default function Explore() {
   const { user } = useAuth();
   const [chatBots, setChatbots] = useState<any>(null)
+  const [loading, setLoading] = useState<boolean>(true)
   useEffect(() => {
     const fetchAllChatBots = async () => {
       const querySnapshot = await getAllExploreChatbots()
@@ -18,6 +24,7 @@ export default function Explore() {
         ...doc.data()
       }))
       setChatbots(chatbotsData)
+      setLoading(false)
     }
 
     fetchAllChatBots()
@@ -31,7 +38,7 @@ export default function Explore() {
 
         <Stack spacing={8}>
           {/* Displays all chatbots */}
-          {chatBots.map((chatbot: { id: string; likes: number; name: string; }, index:number) => (
+          {loading ? <LoadingScreen/> : chatBots.map((chatbot: { id: string; likes: number; name: string; }, index:number) => (
             <ChatbotCard key={chatbot.id} chatbotLikes={chatbot.likes} chatbotName={chatbot.name} reverse={index % 2 ? true : false}/>
           ))}
         </Stack>

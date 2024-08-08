@@ -1,9 +1,8 @@
-import { doc, setDoc, getDocs, collection } from "firebase/firestore";
+import { doc, setDoc, getDocs, collection, addDoc } from "firebase/firestore";
 import { db } from "@/firebase";
 import { User } from 'firebase/auth';
+import { Conversation } from "@/types/conversation";
 
-// On login takes the user created from firebase auth during signInWithPopup,
-// then save to database
 export async function saveUserToDatabase(user: User) {
   await setDoc(doc(db, "users", user.uid), {
     uid: user.uid,
@@ -13,21 +12,27 @@ export async function saveUserToDatabase(user: User) {
   }, { merge: true });
 }
 
-export async function createExploreChatbot(chatbotName:string, likes:number) {
+export async function createExploreChatbot(chatbotName:string, likes:number, messages?:string) {
   await setDoc(doc(db,"chatbots", chatbotName), {
     name: chatbotName,
-    likes: likes
+    likes: likes,
+    ...(messages && { messages }),
   })
 }
 
 export async function getAllExploreChatbots() {
   const querySnapshot = await getDocs(collection(db, "chatbots"));
-  // querySnapshot.forEach((doc) => {
-  //   // doc.data() is never undefined for query doc snapshots
-  //   console.log(doc.id, " => ", doc.data());
-  // });
   return querySnapshot
 }
-export async function createChatHistory() {
+// Create chat history for user 
+// get reference to user doc
+// get reference to that user's history collection 
+// create a chathistory
+export async function createChatHistory(user:User, conversation:Conversation) {
+  const userRef = doc(db, 'users', user.uid)
+  const historyCollectionRef = collection(userRef, 'history');
+  await addDoc(historyCollectionRef, conversation)
+}
 
+export async function getAllChatHistories() {
 }
