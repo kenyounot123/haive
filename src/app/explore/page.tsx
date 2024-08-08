@@ -1,16 +1,20 @@
 'use client'
-import { Typography, Box, Container, Stack, Button } from "@mui/material";
+import { Typography, Box, Container, Stack, Button, CircularProgress } from "@mui/material";
 import HistoryCard from "./components/HistoryCard";
 import ChatbotCard from "./components/ChatbotCard";
 import Link from "next/link";
 import { useAuth } from "@/app/providers";
 import { Key, useEffect, useState } from "react";
+import LogoutButton from "./components/SignoutButton";
 import { getAllExploreChatbots } from "../action";
+
 const LoadingScreen = () => {
   return (
-    <Typography variant="h2" color={"white"}>Finding chatbots...</Typography>
-  )
-}
+    <Box sx={{display: "flex", justifyContent:"center"}}>
+      <CircularProgress color="primary" />
+    </Box>
+  );
+};
 
 export default function Explore() {
   const { user } = useAuth();
@@ -34,7 +38,10 @@ export default function Explore() {
 
 
       <Box sx={{flexGrow:1, p:2}}>
-        <Typography sx={{mb:8, fontWeight: 'bold', color:"white"}} variant="h4">Explore</Typography>
+        <Box sx={{display: "flex", justifyContent:"space-between", alignItems:"flex-start"}}>
+          <Typography sx={{mb:8, fontWeight: 'bold', color:"white"}} variant="h4">Explore</Typography>
+          <LogoutButton/>
+        </Box>
 
         <Stack spacing={8}>
           {/* Displays all chatbots */}
