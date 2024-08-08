@@ -4,12 +4,13 @@ import CallMadeOutlinedIcon from '@mui/icons-material/CallMadeOutlined';
 import Link from "next/link";
 
 interface HistoryCardProps {
-  chatTitle: string
+  chatTitle: string,
+  chatbotName: string
 }
-export default function HistoryCard({chatTitle}: HistoryCardProps) {
+export default function HistoryCard({chatTitle, chatbotName}: HistoryCardProps) {
   return (
     // update path to /chat/[id]
-      <Link href={"/chat"}>
+      <Link href={`/chat/${chatbotName}`}>
         <Box sx={{
           mt:2,
           color: "white",

@@ -6,7 +6,9 @@ import Link from "next/link";
 import { useAuth } from "@/app/providers";
 import { Key, useEffect, useState } from "react";
 import LogoutButton from "./components/SignoutButton";
-import { getAllExploreChatbots } from "../action";
+import { getAllChatHistories, getAllExploreChatbots } from "../action";
+import { useRouter } from "next/navigation";
+import { Conversation } from "@/types/conversation";
 
 const LoadingScreen = () => {
   return (
@@ -17,8 +19,13 @@ const LoadingScreen = () => {
 };
 
 export default function Explore() {
-  const { user } = useAuth();
+  const router = useRouter();
+  const { user, signInWithGoogle } = useAuth();
+  // Update types later
   const [chatBots, setChatbots] = useState<any>(null)
+  const [historyConvos, setHistoryConvos] = useState<any>(null)
+
+
   const [loading, setLoading] = useState<boolean>(true)
   useEffect(() => {
     const fetchAllChatBots = async () => {
@@ -39,6 +46,26 @@ export default function Explore() {
 
     fetchAllChatBots()
   },[])
+  useEffect(() => {
+    const fetchUserChatHistory = async () => {
+      try {
+        const querySnapshot = await getAllChatHistories(user);
+        const historyData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        console.log(historyData)
+        setHistoryConvos(historyData);
+      } catch (error) {
+        console.error('Error fetching conversations:', error);
+        // You can set an error state here if you want to display an error message to the user
+      } 
+    }
+
+    if (user) {
+      fetchUserChatHistory();
+    }
+  }, [user])
   return (
     <Container sx={{display: "flex", flexDirection:"column", maxWidth:"900px"}} maxWidth={false}>
 
@@ -70,9 +97,9 @@ export default function Explore() {
           </Box>
           {/* This should be the user's chat history  */}
           <Box sx={{filter: user ? 'none' : 'blur(5px)'}}>
-            <HistoryCard chatTitle="UI/UX Design for new era"/>
-            <HistoryCard chatTitle="UI/UX Design for new era"/>
-            <HistoryCard chatTitle="UI/UX Design for new era"/>
+            {historyConvos && historyConvos.map((convo:Conversation) => (
+              <HistoryCard key={convo.chatbotName} chatTitle={convo.title} chatbotName={convo.chatbotName}/>
+            ))}
           </Box>
           {!user && (
             <Box
@@ -96,7 +123,8 @@ export default function Explore() {
                   padding: '12px 32px', // Increase padding for height and width
                   borderRadius: "12px",
                   color: "white",
-                }} variant="outlined">
+                }} variant="outlined"
+                  onClick={() => signInWithGoogle().then(() => router.push("/explore"))}>
                   Log In
                 </Button>
               </Box>

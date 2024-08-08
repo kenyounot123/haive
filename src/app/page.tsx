@@ -27,6 +27,7 @@ export default function LandingPage() {
   const handleCreateHistory = async () => {
     try {
       await createChatHistory(user, {
+        title: "UI/UX Design for new era",
         chatbotName: "ChefAI",
         messages: ["Hi", "Hi how can I help you today"],
       })

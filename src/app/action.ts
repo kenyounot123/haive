@@ -35,5 +35,14 @@ export async function createChatHistory(user:User, conversation:Conversation) {
   await addDoc(historyCollectionRef, conversation)
 }
 
-export async function getAllChatHistories() {
+export async function getAllChatHistories(user: User) {
+  try {
+    const userRef = doc(db, 'users', user.uid);
+    const historyCollectionRef = collection(userRef, 'history');
+    const querySnapshot = await getDocs(historyCollectionRef);
+    return querySnapshot;
+  } catch (error) {
+    console.error('Error fetching chat histories:', error);
+    throw new Error('Failed to fetch chat histories');
+  }
 }
