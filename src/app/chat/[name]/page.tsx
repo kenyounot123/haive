@@ -23,16 +23,26 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import "overlayscrollbars/overlayscrollbars.css";
 
 export default function ChatPage({ params }: { params: { name: string } }) {
-  // Assume user is logged in => user is authenticated on the server in the request to this page
+  
+  // Message : {
+  //      role: "user" | "assistant";
+  //      content: string;
+  // }
+
+  // chatHistory: Message[]
+
+
+  // Assume user is logged in => user is authenticated in the server on the request to this page
   // if successful
-  //    read from db to get the convo in history with this chatbot 
+  //    read from db to get the Conversation in history with this chatbot 
   //   ( this will look something like user_collection -> user_doc(id) -> history_collection -> history_doc(id) where history.chatbotName === params.name )
   //    the previous messages for this convo will be rendered
+  //    New messages will be appended to the messages array[] and saved to the database[]
   // else 
   //    we are redirected to this page with no messages
   //   ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   // Assume user is not logged in => this is a chat convo with no messages.
-  // user messages with chatbot storing messages in some type of array []
+  // user messages with chatbot, storing messages in some type of array []
   // if user decides to log in to an account 
   //      From the params we get the Name of the chatbot. (This acts like an ID) 
   //      create a Conversation using the chatbotName and the messages array and save to that user doc's history colelction

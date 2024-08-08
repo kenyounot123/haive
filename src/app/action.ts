@@ -1,4 +1,4 @@
-import { doc, setDoc, getDocs, collection, addDoc } from "firebase/firestore";
+import { doc, setDoc, getDocs, collection, addDoc, increment, updateDoc  } from "firebase/firestore";
 import { db } from "@/firebase";
 import { User } from 'firebase/auth';
 import { Conversation } from "@/types/conversation";
@@ -44,5 +44,17 @@ export async function getAllChatHistories(user: User) {
   } catch (error) {
     console.error('Error fetching chat histories:', error);
     throw new Error('Failed to fetch chat histories');
+  }
+}
+
+export async function updateChatbotLikes(chatbotName: string, like: boolean) {
+  try {
+    const chatbotRef = doc(db, 'chatbots', chatbotName);
+    const update = like ? increment(1) : increment(-1);
+    await updateDoc(chatbotRef, {
+      likes: update,
+    });
+  } catch (error) {
+    console.error('Error updating likes:', error);
   }
 }

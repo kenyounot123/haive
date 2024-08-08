@@ -12,7 +12,6 @@ export function UserMessage({
   message: string; // TODO: replace string with Message type
   user: User;
 }) {
-  console.log(user)
   return (
     <Box
       sx={{

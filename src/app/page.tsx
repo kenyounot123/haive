@@ -29,7 +29,7 @@ export default function LandingPage() {
       await createChatHistory(user, {
         title: "UI/UX Design for new era",
         chatbotName: "ChefAI",
-        messages: ["Hi", "Hi how can I help you today"],
+        chatHistory: ["Hi", "Hi how can I help you today"],
       })
       alert('Convo created successfully!');
     } catch (error) {

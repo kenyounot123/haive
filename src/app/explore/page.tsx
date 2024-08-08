@@ -69,11 +69,10 @@ export default function Explore() {
   return (
     <Container sx={{display: "flex", flexDirection:"column", maxWidth:"900px"}} maxWidth={false}>
 
-
       <Box sx={{flexGrow:1, p:2}}>
         <Box sx={{display: "flex", justifyContent:"space-between", alignItems:"flex-start"}}>
           <Typography sx={{mb:8, fontWeight: 'bold', color:"white"}} variant="h4">Explore</Typography>
-          <LogoutButton/>
+          {user && <LogoutButton/>}
         </Box>
 
         <Stack spacing={8}>
@@ -86,9 +85,9 @@ export default function Explore() {
       </Box>
 
 
-      <Box p={2}>
+      <Box mt={5} p={2}>
         <Box sx={{position:"relative"}}>
-          <Box sx={{display: "flex", justifyContent:"space-between", alignItems:"center",filter: user ? 'none' : 'blur(8px)'}}>
+          <Box sx={{display: "flex", justifyContent:"space-between", alignItems:"center",filter: user ? 'none' : 'blur(3px)'}}>
             <Typography sx={{fontWeight: 'bold', color:"white"}} variant="h4">History</Typography>
             {/* Not sure where this should redirect to yet */}
             <Link href="/chat/chefai">
