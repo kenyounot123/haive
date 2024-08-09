@@ -28,7 +28,6 @@ export async function getChatbot(name: string): Promise<Bot | null> {
       // Ensure that the data matches the Bot type
       // You might want to add checks or default values if some fields can be missing
       const chatbot: Bot = {
-        id: docSnapshot.id,
         name: data.name,
         description: data.description,
         likes: data.likes || 0,

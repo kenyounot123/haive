@@ -1,5 +1,5 @@
 export interface Bot {
-    id: string;
+    // id: string;
     name: string;
     description: string;
     likes: number;

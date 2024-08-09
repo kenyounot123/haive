@@ -16,7 +16,7 @@ export default function LandingPage() {
 
   const handleCreateChatbot = async () => {
     try {
-      await createExploreChatbot("ChefAI", 12, "Chatbot for your culinary needs");
+      await createExploreChatbot({name: "ChefAI", likes: 12, description: "Chatbot for your culinary needs"});
       alert('Chatbot created successfully!');
     } catch (error) {
       console.error('Error creating chatbot:', error);

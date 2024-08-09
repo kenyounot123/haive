@@ -54,7 +54,6 @@ export default function Explore() {
           id: doc.id,
           ...doc.data(),
         }));
-        console.log(historyData)
         setHistoryConvos(historyData);
       } catch (error) {
         console.error('Error fetching conversations:', error);

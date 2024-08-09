@@ -10,15 +10,6 @@ import {
   signOut,
 } from "firebase/auth";
 import { app, provider, db } from "@/firebase";
-import {
-  collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  updateDoc,
-  setDoc,
-  doc,
-} from "firebase/firestore";
 import { saveUserToDatabase } from "@/app/action";
 
 export const AuthContext = createContext<{

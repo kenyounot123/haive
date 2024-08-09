@@ -23,6 +23,7 @@ export function UserMessage({
       <Box
         sx={{
           display: "flex",
+          justifyContent: "flex-end",
           alignItems: "center",
           gap: 1,
         }}

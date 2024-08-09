@@ -51,7 +51,7 @@ export default function ChatPage({ params }: { params: { name: string } }) {
   //      create a Conversation using the chatbotName and the messages array and save to that user doc's history colelction
   //
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, signInWithGoogle, signOutUser } = useAuth();
   const [currentChatbot, setCurrentChatbot] = useState<Bot | null>(null)
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -62,7 +62,6 @@ export default function ChatPage({ params }: { params: { name: string } }) {
   ]);
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-  const [messageLiked, setMessageLiked] = useState(false)
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -89,7 +88,16 @@ export default function ChatPage({ params }: { params: { name: string } }) {
     }, 100);
   };
 
-  const sendMessage = () => {
+  const handleSignInSignOut = () => {
+    if (user) {
+      signOutUser()
+      router.push("/explore")
+    } else {
+      signInWithGoogle().then(() => router.refresh())
+    }
+  }
+
+  const sendMessage = async () => {
     if (!message.trim() || isLoading) return;
     setIsLoading(true);
 
@@ -101,48 +109,48 @@ export default function ChatPage({ params }: { params: { name: string } }) {
       { role: "assistant", content: "", liked: false }, // Add a placeholder for the assistant's response
     ]);
 
-    // try {
-    //   const response = await fetch("/api/chat", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify([...messages, { role: "user", content: message }]),
-    //   });
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify([...messages, { role: "user", content: message }]),
+      });
 
-    //   if (!response.ok) {
-    //     throw new Error("Network response was not ok");
-    //   }
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
 
-    //   const reader = response.body?.getReader();
-    //   const decoder = new TextDecoder();
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
 
-    //   while (true) {
-    //     const { done, value } = await (
-    //       reader as ReadableStreamDefaultReader
-    //     ).read();
-    //     if (done) break;
-    //     const text = decoder.decode(value, { stream: true });
-    //     setMessages((messages) => {
-    //       let lastMessage = messages[messages.length - 1];
-    //       let otherMessages = messages.slice(0, messages.length - 1);
-    //       return [
-    //         ...otherMessages,
-    //         { ...lastMessage, content: lastMessage.content + text },
-    //       ];
-    //     });
-    //   }
-    // } catch (error) {
-    // console.error("Error:", error);
-    // setMessages((messages) => [
-    //   ...messages,
-    //   {
-    //     role: "assistant",
-    //     content:
-    //       "I'm sorry, but I encountered an error. Please try again later.",
-    //   },
-    // ]);
-    // }
+      while (true) {
+        const { done, value } = await (
+          reader as ReadableStreamDefaultReader
+        ).read();
+        if (done) break;
+        const text = decoder.decode(value, { stream: true });
+        setMessages((messages) => {
+          let lastMessage = messages[messages.length - 1];
+          let otherMessages = messages.slice(0, messages.length - 1);
+          return [
+            ...otherMessages,
+            { ...lastMessage, content: lastMessage.content + text },
+          ];
+        });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setMessages((messages) => [
+        ...messages,
+        {
+          role: "assistant",
+          content:
+            "I'm sorry, but I encountered an error. Please try again later.",
+        },
+      ]);
+    }
     setIsLoading(false);
   };
 
@@ -184,6 +192,15 @@ export default function ChatPage({ params }: { params: { name: string } }) {
         <Typography sx={{ fontWeight: "bold", color: "white" }} variant="h5">
           {params.name.toUpperCase()}
         </Typography>
+        <Button
+          variant="outlined" 
+          sx={{
+            position: "absolute",
+            color: "white",
+            right: 0,
+          }}
+          onClick={handleSignInSignOut}
+          >{user ? "Logout" : "Sign In & Save"}</Button>
       </Box>
 
       <Stack
@@ -219,8 +236,6 @@ export default function ChatPage({ params }: { params: { name: string } }) {
               >
                 {message.role === "assistant" ? (
                   <BotMessage
-                    messageLiked={messageLiked}
-                    setMessageLiked={setMessageLiked}
                     message={message}
                     bot={currentChatbot}
                   />
