@@ -1,9 +1,10 @@
 "use client";
 
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/providers";
 import { createExploreChatbot, createChatHistory } from "./action";
+import Link from "next/link";
 
 import HiveRounded from '@mui/icons-material/Hive';
 
@@ -15,42 +16,8 @@ export default function LandingPage() {
     signInWithGoogle().then(() => router.push("/explore"));
   }
 
-  const handleCreateChatbot = async () => {
-    try {
-      await createExploreChatbot({name: "ChefAI", likes: 12, description: "Chatbot for your culinary needs"});
-      alert('Chatbot created successfully!');
-    } catch (error) {
-      console.error('Error creating chatbot:', error);
-      alert('Failed to create chatbot.');
-    }
-  }
-  
-  const handleCreateHistory = async () => {
-    if (!user) {
-      alert('Please sign in to create chat history.');
-      return;
-    }
-    try {
-      await createChatHistory(user, {
-        title: "UI/UX Design for new era",
-        chatbotName: "ChefAI",
-        chatHistory: ["Hi", "Hi how can I help you today"],
-      })
-      alert('Convo created successfully!');
-    } catch (error) {
-      console.error('Error creating Convo:', error);
-      alert('Failed to create Convo.');
-    }
-  }
-
-
   return (
     <>
-      <Button onClick={handleCreateHistory} variant="contained"> create History</Button>
-      <Button onClick={handleCreateChatbot} variant="contained"> create chatbot</Button>
-      <Button onClick={handleSignIn} variant="contained">
-        Login
-      </Button>
       <div className="header">
         <div className="logo">
           <HiveRounded style={{ fontSize: 40 }} sx={{
@@ -58,23 +25,25 @@ export default function LandingPage() {
           }}/>
           <div className="logo-text">
             <header>
-              <h1>
+              <Typography variant="h3">
                 h<span className="highlight">AI</span>ve
-              </h1>
+              </Typography>
             </header>
           </div>
         </div>
         <div>
-          <a href="#" className="login-button">
+          <Button className="login-button" variant="outlined" sx={{fontSize:20, color: "white"}} onClick={handleSignIn}>
             Login 
-          </a>
-          <button className="menu-button">Menu</button>
+          </Button>
+          <Button className="menu-button" variant="outlined" sx={{fontSize:20, color: "white"}}>
+            Menu 
+          </Button>
         </div>
       </div>
 
       <section className="main">
         <div>
-          <h1 className="highlight">
+          <h1 className="lp text-bold">
             <span>Unlock the{" "}</span>
             <span>
               Ultimate <b className="highlight">AI</b>
@@ -92,12 +61,14 @@ export default function LandingPage() {
             <br />
             ChatBots provide instant, specialized insights just for you.
           </p>
-          <a href="#" className="explore-button">
-            Explore
-          </a>
+          <Link href={"/explore"}>
+            <Button sx={{fontSize:24, mt:2, fontWeight:700}} variant="contained">
+              Explore
+            </Button>
+          </Link>
         </div>
       </section>
-      <section>
+      <section className="img-container">
         <div className="empty"></div>
       </section>
     </>
