@@ -23,6 +23,7 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import "overlayscrollbars/overlayscrollbars.css";
 import { getChatbot } from "@/app/action";
 import { Bot } from "@/types/bot";
+import { Message } from "@/types/message";
 
 export default function ChatPage({ params }: { params: { name: string } }) {
   
@@ -52,7 +53,7 @@ export default function ChatPage({ params }: { params: { name: string } }) {
   const router = useRouter();
   const { user } = useAuth();
   const [currentChatbot, setCurrentChatbot] = useState<Bot | null>(null)
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
       content:
@@ -97,7 +98,7 @@ export default function ChatPage({ params }: { params: { name: string } }) {
     setMessages((messages) => [
       ...messages,
       { role: "user", content: message }, // Add the user's message to the chat
-      { role: "assistant", content: "" }, // Add a placeholder for the assistant's response
+      { role: "assistant", content: "", liked: false }, // Add a placeholder for the assistant's response
     ]);
 
     // try {
@@ -220,11 +221,11 @@ export default function ChatPage({ params }: { params: { name: string } }) {
                   <BotMessage
                     messageLiked={messageLiked}
                     setMessageLiked={setMessageLiked}
-                    message={message.content}
+                    message={message}
                     bot={currentChatbot}
                   />
                 ) : (
-                  <UserMessage message={message.content} user={user} />
+                  <UserMessage message={message} user={user} />
                 )}
               </Box>
             ))}

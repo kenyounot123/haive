@@ -9,7 +9,7 @@ export function UserMessage({
   message,
   user,
 }: {
-  message: string; // TODO: replace string with Message type
+  message: Message; // TODO: replace string with Message type
   user: User;
 }) {
   return (
@@ -58,7 +58,7 @@ export function UserMessage({
           borderRadius: "15px",
         }}
       >
-        {message}
+        {message.content}
       </Box>
     </Box>
   );

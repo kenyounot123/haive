@@ -23,11 +23,13 @@ export function BotMessage({
 }: { 
   messageLiked: boolean;
   setMessageLiked: Dispatch<SetStateAction<boolean>>;
-  message: string; // TODO: replace string with Message type
+  message: Message; // TODO: replace string with Message type
   bot: Bot | null
 }) {
   const { user } = useAuth()
   const toggleLikeMessage = async () => {
+    console.log(message)
+    message.liked = !messageLiked
     await updateChatbotLikes(bot, !messageLiked)
     setMessageLiked(!messageLiked)
   }
@@ -74,11 +76,11 @@ export function BotMessage({
           borderRadius: "15px",
         }}
       >
-        <Typography>{message}</Typography>
+        <Typography>{message.content}</Typography>
         <Box 
           sx={{display: "flex", justifyContent:"flex-end"}}
         >
-          {message && user && <ThumbUpOffAltIcon onClick={toggleLikeMessage} sx={{transition: 'color 0.3s, transform 0.3s',
+          {message.hasOwnProperty('liked') && user && message.content && <ThumbUpOffAltIcon onClick={toggleLikeMessage} sx={{transition: 'color 0.3s, transform 0.3s',
             color: messageLiked ? "primary.main" : "black",
             '&:hover': {
               color: "primary.main", // Change color on hover
