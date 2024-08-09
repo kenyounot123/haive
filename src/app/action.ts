@@ -73,6 +73,9 @@ export async function getAllExploreChatbots() {
 }
 
 export async function createChatHistory(
+  /**
+   * initialize a new conversation with the chatbot
+   */
   user: User,
   conversation: Conversation
 ) {
@@ -200,8 +203,22 @@ export async function getChatHistory(
       where("chatbotName", "==", chatbotName)
     );
     const querySnapshot = await getDocs(q);
-    const chatbotDoc = querySnapshot.docs[0];
-    return chatbotDoc.data();
+    
+    // TODO: Handle case where there are no chat histories
+    // check if querySnapshot is empty, 
+    // if empty:
+    //    create a new Conversation()
+    //    save to db
+    // else:
+    //    return the first in the querySnapshot 
+    //    ^
+    //    |
+    //    const chatbotDoc = querySnapshot.docs[0];
+
+
+
+    // return chatbotDoc.data();
+
   } catch (error) {
     console.error("Error fetching chat history:", error);
     // Handle the error, e.g., show a message to the user
