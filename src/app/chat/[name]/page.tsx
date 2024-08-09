@@ -21,6 +21,8 @@ import { UserMessage } from "@/app/chat/components/UserMessage";
 import { useAuth } from "@/app/providers";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import "overlayscrollbars/overlayscrollbars.css";
+import { getChatbot } from "@/app/action";
+import { Bot } from "@/types/bot";
 
 export default function ChatPage({ params }: { params: { name: string } }) {
   
@@ -49,6 +51,7 @@ export default function ChatPage({ params }: { params: { name: string } }) {
   //
   const router = useRouter();
   const { user } = useAuth();
+  const [currentChatbot, setCurrentChatbot] = useState<Bot | null>(null)
   const [messages, setMessages] = useState([
     {
       role: "assistant",
@@ -60,6 +63,14 @@ export default function ChatPage({ params }: { params: { name: string } }) {
   const [isLoading, setIsLoading] = useState(false);
   const [messageLiked, setMessageLiked] = useState(false)
   const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    const fetchCurrentChatbot = async () => {
+      const botRef = await getChatbot(params.name)
+      setCurrentChatbot(botRef)
+    }
+    fetchCurrentChatbot()
+  }, [])
 
   // const EnterKeyDetector = () => {
   //   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -210,13 +221,7 @@ export default function ChatPage({ params }: { params: { name: string } }) {
                     messageLiked={messageLiked}
                     setMessageLiked={setMessageLiked}
                     message={message.content}
-                    bot={{
-                      name: "Bot",
-                      id: 1,
-                      description: "",
-                      created_at: new Date(),
-                      updated_at: new Date(),
-                    }}
+                    bot={currentChatbot}
                   />
                 ) : (
                   <UserMessage message={message.content} user={user} />

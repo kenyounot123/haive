@@ -13,6 +13,7 @@ import { Bot } from "@/types/bot";
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import { Dispatch, SetStateAction } from 'react';
 import { useAuth } from "@/context/auth-context";
+import { updateChatbotLikes } from "@/app/action";
 
 export function BotMessage({ 
   messageLiked,
@@ -23,11 +24,12 @@ export function BotMessage({
   messageLiked: boolean;
   setMessageLiked: Dispatch<SetStateAction<boolean>>;
   message: string; // TODO: replace string with Message type
-  bot: Bot 
+  bot: Bot | null
 }) {
   const { user } = useAuth()
-  const toggleLikeMessage = () => {
-    messageLiked ? setMessageLiked(false) : setMessageLiked(true) 
+  const toggleLikeMessage = async () => {
+    await updateChatbotLikes(bot, !messageLiked)
+    setMessageLiked(!messageLiked)
   }
   return (
     <Box sx={{
