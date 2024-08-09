@@ -7,13 +7,8 @@ import {
   TextField,
   Button,
   Stack,
-  Avatar,
 } from "@mui/material";
-import {
-  ArrowBackRounded,
-  SendRounded,
-  HiveRounded,
-} from "@mui/icons-material";
+import { ArrowBackRounded, SendRounded } from "@mui/icons-material";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { BotMessage } from "@/app/chat/components/BotMessage";
@@ -21,66 +16,51 @@ import { UserMessage } from "@/app/chat/components/UserMessage";
 import { useAuth } from "@/app/providers";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import "overlayscrollbars/overlayscrollbars.css";
-import { getChatbot } from "@/app/action";
+import {
+  getChatbot,
+  addMessageToHistory,
+  getChatHistory,
+  // moveMessagesToUserHistory,
+} from "@/app/action";
 import { Bot } from "@/types/bot";
 import { Message } from "@/types/message";
 
+const initialMessages: Message[] = [
+  {
+    role: "assistant",
+    content:
+      "Hi! I'm the Headstarter support assistant. How can I help you today?",
+  },
+];
+
 export default function ChatPage({ params }: { params: { name: string } }) {
-  
-  // Message : {
-  //      role: "user" | "assistant";
-  //      content: string;
-  // }
-
-  // chatHistory: Message[]
-
-
-  // Assume user is logged in => user is authenticated in the server on the request to this page
-  // if successful
-  //    read from db to get the Conversation in history with this chatbot 
-  //   ( this will look something like user_collection -> user_doc(id) -> history_collection -> history_doc(id) where history.chatbotName === params.name )
-  //    the previous messages for this convo will be rendered
-  //    New messages will be appended to the messages array[] and saved to the database[]
-  // else 
-  //    we are redirected to this page with no messages
-  //   ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  // Assume user is not logged in => this is a chat convo with no messages.
-  // user messages with chatbot, storing messages in some type of array []
-  // if user decides to log in to an account 
-  //      From the params we get the Name of the chatbot. (This acts like an ID) 
-  //      create a Conversation using the chatbotName and the messages array and save to that user doc's history colelction
-  //
   const router = useRouter();
   const { user, signInWithGoogle, signOutUser } = useAuth();
-  const [currentChatbot, setCurrentChatbot] = useState<Bot | null>(null)
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content:
-        "Hi! I'm the Headstarter support assistant. How can I help you today?",
-    },
-  ]);
+  const [currentChatbot, setCurrentChatbot] = useState<Bot | null>(null);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
     const fetchCurrentChatbot = async () => {
-      const botRef = await getChatbot(params.name)
-      setCurrentChatbot(botRef)
-    }
-    fetchCurrentChatbot()
-  }, [])
-
-  // const EnterKeyDetector = () => {
-  //   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-  //     if (event.key === 'Enter') {
-  //       sendMessage();
-  //     }
-  //   };
+      const botRef = await getChatbot(params.name);
+      setCurrentChatbot(botRef);
+    };
+    const fetchChatHistory = async () => {
+      const chatbotRef = await getChatHistory(user?.uid, params.name);
+      setMessages(chatbotRef?.chatHistory || []);
+    };
+    const loadData = async () => {
+      await fetchCurrentChatbot();
+      if (user) {
+        await fetchChatHistory();
+      }
+    };
+    loadData();
+  }, [user, params.name]);
 
   const scrollToBottom = () => {
-
     setTimeout(() => {
       (messagesEndRef.current as HTMLElement | null)?.scrollIntoView({
         behavior: "smooth",
@@ -90,24 +70,33 @@ export default function ChatPage({ params }: { params: { name: string } }) {
 
   const handleSignInSignOut = () => {
     if (user) {
-      signOutUser()
-      router.push("/explore")
+      signOutUser();
+      router.push("/explore");
     } else {
-      signInWithGoogle().then(() => router.refresh())
+      signInWithGoogle().then((user) => {
+        // moveMessagesToUserHistory(user.uid, params.name, messages);
+        router.refresh();
+      });
     }
-  }
+  };
 
   const sendMessage = async () => {
     if (!message.trim() || isLoading) return;
     setIsLoading(true);
 
-    // We'll implement this function in the next section
     setMessage(""); // Clear the input field
     setMessages((messages) => [
       ...messages,
       { role: "user", content: message }, // Add the user's message to the chat
       { role: "assistant", content: "", liked: false }, // Add a placeholder for the assistant's response
     ]);
+
+    if (user) {
+      await addMessageToHistory(user.uid, params.name, {
+        role: "user",
+        content: message,
+      });
+    }
 
     try {
       const response = await fetch("/api/chat", {
@@ -129,7 +118,14 @@ export default function ChatPage({ params }: { params: { name: string } }) {
         const { done, value } = await (
           reader as ReadableStreamDefaultReader
         ).read();
-        if (done) break;
+        if (done) {
+          if (user) {
+            // end of stream, save last message to db
+            const lastMessage = messages[messages.length - 1];
+            addMessageToHistory(user.uid, params.name, lastMessage);
+          }
+          break;
+        }
         const text = decoder.decode(value, { stream: true });
         setMessages((messages) => {
           let lastMessage = messages[messages.length - 1];
@@ -150,6 +146,15 @@ export default function ChatPage({ params }: { params: { name: string } }) {
             "I'm sorry, but I encountered an error. Please try again later.",
         },
       ]);
+      if (user) {
+        const lastMessage: Message = {
+          role: "assistant",
+          content:
+            "I'm sorry, but I encountered an error. Please try again later.",
+        };
+        // console.log(user.uid, params.name, lastMessage);
+        addMessageToHistory(user.uid, params.name, lastMessage);
+      }
     }
     setIsLoading(false);
   };
@@ -193,14 +198,16 @@ export default function ChatPage({ params }: { params: { name: string } }) {
           {params.name.toUpperCase()}
         </Typography>
         <Button
-          variant="outlined" 
+          variant="outlined"
           sx={{
             position: "absolute",
             color: "white",
             right: 0,
           }}
           onClick={handleSignInSignOut}
-          >{user ? "Logout" : "Sign In & Save"}</Button>
+        >
+          {user ? "Logout" : "Sign In & Save"}
+        </Button>
       </Box>
 
       <Stack
@@ -235,10 +242,7 @@ export default function ChatPage({ params }: { params: { name: string } }) {
                 }
               >
                 {message.role === "assistant" ? (
-                  <BotMessage
-                    message={message}
-                    bot={currentChatbot}
-                  />
+                  <BotMessage message={message} bot={currentChatbot} />
                 ) : (
                   <UserMessage message={message} user={user} />
                 )}
