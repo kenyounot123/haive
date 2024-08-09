@@ -11,9 +11,10 @@ import {
 } from "firebase/auth";
 import { app, provider, db } from "@/firebase";
 import { saveUserToDatabase } from "@/app/action";
+import { User } from "firebase/auth";
 
 export const AuthContext = createContext<{
-  user: any;
+  user: User | null;
   setUser: React.Dispatch<React.SetStateAction<any>>;
   signInWithGoogle: () => Promise<any>;
   signOutUser: () => void;
@@ -43,7 +44,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const auth = getAuth(app);
     const userCredential: UserCredential = await signInWithPopup(auth, provider)
     const user = userCredential.user;
-    return await saveUserToDatabase(user)
+    await saveUserToDatabase(user)
+    return user;
       // .then((result) => {
       //   // This gives you a Google Access Token. You can use it to access the Google API.
       //   const credential = GoogleAuthProvider.credentialFromResult(result);

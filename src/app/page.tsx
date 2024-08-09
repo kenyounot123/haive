@@ -26,6 +26,10 @@ export default function LandingPage() {
   }
   
   const handleCreateHistory = async () => {
+    if (!user) {
+      alert('Please sign in to create chat history.');
+      return;
+    }
     try {
       await createChatHistory(user, {
         title: "UI/UX Design for new era",

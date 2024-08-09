@@ -3,14 +3,14 @@
 import { Typography, Box, Avatar } from "@mui/material";
 import { HiveRounded } from "@mui/icons-material";
 import { Message } from "@/types/message";
-import { User } from "@/types/user";
+import { User } from "firebase/auth";
 
 export function UserMessage({
   message,
   user,
 }: {
   message: Message; // TODO: replace string with Message type
-  user: User;
+  user: User | null;
 }) {
   return (
     <Box
@@ -42,7 +42,7 @@ export function UserMessage({
             sx={{
               backgroundColor: "black",
             }}
-            src={user.photoURL}
+            src={user.photoURL as string | undefined}
             slotProps={{ img: { referrerPolicy: "no-referrer" } }}
           /> 
         : <HiveRounded
