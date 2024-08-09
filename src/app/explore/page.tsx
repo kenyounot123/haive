@@ -99,7 +99,7 @@ export default function Explore() {
               <HistoryCard key={convo.chatbotName} chatTitle={convo.title} chatbotName={convo.chatbotName}/>
             ))}
           </Box>
-          {!user && (
+          {(!loading && !user) && (
             <Box
               sx={{
                 position: 'absolute',
