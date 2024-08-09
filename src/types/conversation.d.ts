@@ -1,5 +1,7 @@
+import Message from "@/types/message"
+
 export interface Conversation {
   chatbotName: string,
-  chatHistory: string[], // This will be an array of Message Objects in the future
+  chatHistory: Message[], // This will be an array of Message Objects in the future
   title: string,
 }

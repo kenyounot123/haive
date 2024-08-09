@@ -16,14 +16,17 @@ import { UserMessage } from "@/app/chat/components/UserMessage";
 import { useAuth } from "@/app/providers";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import "overlayscrollbars/overlayscrollbars.css";
+import { getDoc } from "firebase/firestore";
 import {
   getChatbot,
   addMessageToHistory,
   getChatHistory,
-  // moveMessagesToUserHistory,
+  createChatHistory,
+  moveMessagesToUserHistory,
 } from "@/app/action";
 import { Bot } from "@/types/bot";
 import { Message } from "@/types/message";
+import { Conversation } from "@/types/conversation";
 
 const initialMessages: Message[] = [
   {
@@ -48,8 +51,24 @@ export default function ChatPage({ params }: { params: { name: string } }) {
       setCurrentChatbot(botRef);
     };
     const fetchChatHistory = async () => {
-      const chatbotRef = await getChatHistory(user?.uid, params.name);
-      setMessages(chatbotRef?.chatHistory || []);
+      if (user) {
+        const chatbotData = await getChatHistory(user.uid, params.name);
+        if (chatbotData) {
+          setMessages(chatbotData.chatHistory || messages);
+        } else {
+          const conversation: Conversation = { 
+            chatbotName: params.name,
+            chatHistory: messages,
+            title: params.name,
+          };
+          const docRef = await createChatHistory(user, conversation);
+          
+          const newDocSnap = await getDoc(docRef);
+          const newDocData = newDocSnap.data();
+          
+          setMessages(newDocData?.chatHistory || messages);
+        }
+      }
     };
     const loadData = async () => {
       await fetchCurrentChatbot();
@@ -74,7 +93,7 @@ export default function ChatPage({ params }: { params: { name: string } }) {
       router.push("/explore");
     } else {
       signInWithGoogle().then((user) => {
-        // moveMessagesToUserHistory(user.uid, params.name, messages);
+        moveMessagesToUserHistory(user.uid, params.name, messages);
         router.refresh();
       });
     }
@@ -91,6 +110,7 @@ export default function ChatPage({ params }: { params: { name: string } }) {
       { role: "assistant", content: "", liked: false }, // Add a placeholder for the assistant's response
     ]);
 
+    // Problem with this is that it does not save the 
     if (user) {
       await addMessageToHistory(user.uid, params.name, {
         role: "user",
@@ -122,7 +142,7 @@ export default function ChatPage({ params }: { params: { name: string } }) {
           if (user) {
             // end of stream, save last message to db
             const lastMessage = messages[messages.length - 1];
-            addMessageToHistory(user.uid, params.name, lastMessage);
+            await addMessageToHistory(user.uid, params.name, lastMessage);
           }
           break;
         }
@@ -151,11 +171,18 @@ export default function ChatPage({ params }: { params: { name: string } }) {
           role: "assistant",
           content:
             "I'm sorry, but I encountered an error. Please try again later.",
-        };
+        };  
         // console.log(user.uid, params.name, lastMessage);
-        addMessageToHistory(user.uid, params.name, lastMessage);
+        await addMessageToHistory(user.uid, params.name, lastMessage);
       }
+    }  finally {
+        if (user) {
+          // end of stream, save last message to db
+          const lastMessage = messages[messages.length - 1];
+          await addMessageToHistory(user.uid, params.name, lastMessage);
+        }
     }
+
     setIsLoading(false);
   };
 

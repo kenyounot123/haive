@@ -49,12 +49,14 @@ export default function Explore() {
   useEffect(() => {
     const fetchUserChatHistory = async () => {
       try {
-        const querySnapshot = await getAllChatHistories(user);
-        const historyData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setHistoryConvos(historyData);
+        if (user !== null) {
+          const querySnapshot = await getAllChatHistories(user);
+          const historyData = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setHistoryConvos(historyData);
+        }
       } catch (error) {
         console.error('Error fetching conversations:', error);
         // You can set an error state here if you want to display an error message to the user

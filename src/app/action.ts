@@ -10,6 +10,7 @@ import {
   arrayUnion,
   query,
   where,
+  QuerySnapshot,
 } from "firebase/firestore";
 import { db } from "@/firebase";
 import { User } from "firebase/auth";
@@ -81,7 +82,8 @@ export async function createChatHistory(
 ) {
   const userRef = doc(db, "users", user.uid);
   const historyCollectionRef = collection(userRef, "history");
-  await addDoc(historyCollectionRef, conversation);
+  const docRef = await addDoc(historyCollectionRef, conversation);
+  return docRef
 }
 
 export async function getAllChatHistories(user: User) {
@@ -203,7 +205,18 @@ export async function getChatHistory(
       where("chatbotName", "==", chatbotName)
     );
     const querySnapshot = await getDocs(q);
-    
+    if (!querySnapshot.empty) {
+      // Get the first document from the query result
+      const chatbotDoc = querySnapshot.docs[0];
+      return chatbotDoc.data(); // Return the data of the first document
+    } else {
+      // Return null if no documents were found
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching chat history:", error);
+    return null;
+  }
     // TODO: Handle case where there are no chat histories
     // check if querySnapshot is empty, 
     // if empty:
@@ -218,9 +231,4 @@ export async function getChatHistory(
 
 
     // return chatbotDoc.data();
-
-  } catch (error) {
-    console.error("Error fetching chat history:", error);
-    // Handle the error, e.g., show a message to the user
-  }
 }
