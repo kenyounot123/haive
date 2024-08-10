@@ -1,17 +1,43 @@
 import {NextRequest, NextResponse} from 'next/server' // Import NextResponse from Next.js for handling responses
 import OpenAI from 'openai' // Import OpenAI library for interacting with the OpenAI API
-
-// System prompt for the AI, providing guidelines on how to respond to users
-const systemPrompt = "You are a masterchef. Your name is CookAI, and you are well versed in culinary techniques, recipes and an expert in cooking. you will answer to any user's questions related to cooking in a accurate and precise manner. Refer to the chat history and relevant documents to formulate your answer."
+import { Pinecone } from '@pinecone-database/pinecone'
 
 // POST function to handle incoming requests
 export async function POST(req: NextRequest) {
-  const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY}) // Create a new instance of the OpenAI client
+  const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY}) 
+  const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY || "" })
   const data = await req.json() // Parse the JSON body of the incoming request
+  
+  // Assuming you need to use the prompt in a system prompt or elsewhere
+  const lastMessage = data[data.length - 1];
+  const systemPrompt = lastMessage.prompt || "you are an assistant"; // Default system prompt if none provided
+  const chatbotName: string = lastMessage.botname.toLowerCase()
+  console.log(chatbotName)
+  const rawQueryEmbedding = await openai.embeddings.create({
+    input: lastMessage.content,
+    model: "text-embedding-3-small",
+  });
+
+  const queryEmbedding = rawQueryEmbedding.data[0].embedding;
+
+  const index = pinecone.index(chatbotName);
+  const topMatches = await index.query({
+    vector: queryEmbedding,
+    topK: 10,
+    includeMetadata: true 
+  });
+
+  const contexts = topMatches.matches.map((item: any) => item.metadata.text);
+
+  const augmentedQuery = "\n" + contexts.slice(0, 10).join("\n\n-------\n\n") + "\n-------\n\n\n\n\nMY QUESTION:\n" + lastMessage.content;
+
+
 
   // Create a chat completion request to the OpenAI API
   const completion = await openai.chat.completions.create({
-    messages: [{role: 'system', content: systemPrompt}, ...data], // Include the system prompt and user messages
+    messages: [{role: 'system', content: systemPrompt}, 
+      { role: 'user', content: augmentedQuery }
+    ], // Include the system prompt and user messages
     model: 'gpt-3.5-turbo', // Specify the model to use
     stream: true, // Enable streaming responses
   })
