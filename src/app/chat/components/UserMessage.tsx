@@ -3,16 +3,15 @@
 import { Typography, Box, Avatar } from "@mui/material";
 import { HiveRounded } from "@mui/icons-material";
 import { Message } from "@/types/message";
-import { User } from "@/types/user";
+import { User } from "firebase/auth";
 
 export function UserMessage({
   message,
   user,
 }: {
-  message: string; // TODO: replace string with Message type
-  user: User;
+  message: Message; // TODO: replace string with Message type
+  user: User | null;
 }) {
-  console.log(user)
   return (
     <Box
       sx={{
@@ -24,6 +23,7 @@ export function UserMessage({
       <Box
         sx={{
           display: "flex",
+          justifyContent: "flex-end",
           alignItems: "center",
           gap: 1,
         }}
@@ -35,21 +35,21 @@ export function UserMessage({
             fontWeight: "bold",
           }}
         >
-          {user.displayName}
+          {user ? user.displayName : "Guest"}
         </Typography>
-        <Avatar
-          sx={{
-            backgroundColor: "black",
-          }}
-          src={user.photoURL}
-          slotProps={{ img: { referrerPolicy: "no-referrer" } }}
-        >
-          {/* <HiveRounded
-                sx={{
-                  color: "primary.main",
-                }}
-              /> */}
-        </Avatar>
+        {user ? 
+          <Avatar
+            sx={{
+              backgroundColor: "black",
+            }}
+            src={user.photoURL as string | undefined}
+            slotProps={{ img: { referrerPolicy: "no-referrer" } }}
+          /> 
+        : <HiveRounded
+            sx={{
+              color: "primary.main",
+            }}
+          />}
       </Box>
       <Box
         bgcolor={"primary.main"}
@@ -59,7 +59,7 @@ export function UserMessage({
           borderRadius: "15px",
         }}
       >
-        {message}
+        {message.content}
       </Box>
     </Box>
   );

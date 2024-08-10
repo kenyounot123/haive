@@ -1,43 +1,107 @@
 'use client'
-import { Typography, Box, Container, Stack, Button } from "@mui/material";
+import { Typography, Box, Container, Stack, Button, CircularProgress } from "@mui/material";
 import HistoryCard from "./components/HistoryCard";
 import ChatbotCard from "./components/ChatbotCard";
 import Link from "next/link";
-import { useState } from "react";
 import { useAuth } from "@/app/providers";
+import { Key, useEffect, useState } from "react";
+import LogoutButton from "./components/SignoutButton";
+import { getAllChatHistories, getAllExploreChatbots } from "../action";
+import { useRouter } from "next/navigation";
+import { Conversation } from "@/types/conversation";
+
+const LoadingScreen = () => {
+  return (
+    <Box sx={{display: "flex", justifyContent:"center"}}>
+      <CircularProgress color="primary" />
+    </Box>
+  );
+};
 
 export default function Explore() {
-  const { user } = useAuth();
+  const router = useRouter();
+  const { user, signInWithGoogle } = useAuth();
+  // Update types later
+  const [chatBots, setChatbots] = useState<any>(null)
+  const [historyConvos, setHistoryConvos] = useState<any>(null)
+
+
+  const [loading, setLoading] = useState<boolean>(true)
+  useEffect(() => {
+    const fetchAllChatBots = async () => {
+      try {
+        const querySnapshot = await getAllExploreChatbots();
+        const chatbotsData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setChatbots(chatbotsData);
+      } catch (error) {
+        console.error('Error fetching chatbots:', error);
+        // You can set an error state here if you want to display an error message to the user
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchAllChatBots()
+  },[])
+  useEffect(() => {
+    const fetchUserChatHistory = async () => {
+      try {
+        if (user !== null) {
+          const querySnapshot = await getAllChatHistories(user);
+          const historyData = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setHistoryConvos(historyData);
+        }
+      } catch (error) {
+        console.error('Error fetching conversations:', error);
+        // You can set an error state here if you want to display an error message to the user
+      } 
+    }
+
+    if (user) {
+      fetchUserChatHistory();
+    }
+  }, [user])
   return (
     <Container sx={{display: "flex", flexDirection:"column", maxWidth:"900px"}} maxWidth={false}>
 
-
       <Box sx={{flexGrow:1, p:2}}>
-        <Typography sx={{mb:8, fontWeight: 'bold', color:"white"}} variant="h4">Explore</Typography>
+        <Box sx={{display: "flex", justifyContent:"space-between", alignItems:"flex-start"}}>
+          <Typography sx={{mb:8, fontWeight: 'bold', color:"white"}} variant="h4">Explore</Typography>
+          {user && <LogoutButton/>}
+        </Box>
 
         <Stack spacing={8}>
-          <ChatbotCard chatbotLikes={5} chatbotName={"ChefAI"} reverse={false}/>
-          <ChatbotCard chatbotLikes={5} chatbotName={"ChefAI"} reverse={true}/>
-          <ChatbotCard chatbotLikes={5} chatbotName={"ChefAI"} reverse={false}/>
+          {/* Displays all chatbots */}
+          {loading && <LoadingScreen/>}
+          {!loading && chatBots && chatBots.map((chatbot: { id: string; likes: number; name: string; description: string }, index:number) => (
+            <ChatbotCard key={chatbot.id} chatbotDescription={chatbot.description} chatbotLikes={chatbot.likes} chatbotName={chatbot.name} reverse={index % 2 ? true : false}/>
+          ))}
         </Stack>
       </Box>
 
 
-      <Box p={2}>
+      <Box mt={5} p={2}>
         <Box sx={{position:"relative"}}>
-          <Box sx={{display: "flex", justifyContent:"space-between", alignItems:"center",filter: user ? 'none' : 'blur(8px)'}}>
+          <Box sx={{display: "flex", justifyContent:"space-between", alignItems:"center",filter: user ? 'none' : 'blur(3px)'}}>
             <Typography sx={{fontWeight: 'bold', color:"white"}} variant="h4">History</Typography>
-            <Link href="/chat">
+            {/* Not sure where this should redirect to yet */}
+            <Link href="/chat/chefai">
               <Typography sx={{fontWeight: 'light', color:"white", textDecoration: "underline"}}>See all</Typography>
             </Link>
           </Box>
           {/* This should be the user's chat history  */}
           <Box sx={{filter: user ? 'none' : 'blur(5px)'}}>
-            <HistoryCard chatTitle="UI/UX Design for new era"/>
-            <HistoryCard chatTitle="UI/UX Design for new era"/>
-            <HistoryCard chatTitle="UI/UX Design for new era"/>
+            {historyConvos && historyConvos.map((convo:Conversation) => (
+              <HistoryCard key={convo.chatbotName} chatTitle={convo.title} chatbotName={convo.chatbotName}/>
+            ))}
           </Box>
-          {!user && (
+          {(!loading && !user) && (
             <Box
               sx={{
                 position: 'absolute',
@@ -58,7 +122,9 @@ export default function Explore() {
                   fontSize: 32, // Increase font size
                   padding: '12px 32px', // Increase padding for height and width
                   borderRadius: "12px",
-                }} variant="outlined">
+                  color: "white",
+                }} variant="outlined"
+                  onClick={() => signInWithGoogle().then(() => router.push("/explore"))}>
                   Log In
                 </Button>
               </Box>

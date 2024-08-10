@@ -11,22 +11,25 @@ import {
 import { Message } from "@/types/message";
 import { Bot } from "@/types/bot";
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
-import { Dispatch, SetStateAction } from 'react';
+import { useAuth } from "@/context/auth-context";
+import { updateChatbotLikes } from "@/app/action";
+import { useState } from "react";
 
 export function BotMessage({ 
-  messageLiked,
-  setMessageLiked,
   message, 
   bot 
 }: { 
-  messageLiked: boolean;
-  setMessageLiked: Dispatch<SetStateAction<boolean>>;
-  message: string; // TODO: replace string with Message type
-  bot: Bot 
+  message: Message; // TODO: replace string with Message type
+  bot: Bot | null
 }) {
-
-  const toggleLikeMessage = () => {
-    messageLiked ? setMessageLiked(false) : setMessageLiked(true) 
+  // State to manage the like status
+  const [liked, setLiked] = useState(message.liked || false);
+  const { user } = useAuth()
+  
+  const toggleLikeMessage = async () => {
+    setLiked(!message.liked)
+    message.liked = !message.liked
+    await updateChatbotLikes(bot, !message.liked)
   }
   return (
     <Box sx={{
@@ -59,8 +62,8 @@ export function BotMessage({
             fontWeight: "bold",
           }}
         >
-          {/* TODO: replace with bot */}
-          --ASSISTANT NAME-- 
+          
+          {bot?.name} 
         </Typography>
       </Box>
       <Box
@@ -71,12 +74,12 @@ export function BotMessage({
           borderRadius: "15px",
         }}
       >
-        <Typography>{message}</Typography>
+        <Typography>{message.content}</Typography>
         <Box 
           sx={{display: "flex", justifyContent:"flex-end"}}
         >
-          {message && <ThumbUpOffAltIcon onClick={toggleLikeMessage} sx={{transition: 'color 0.3s, transform 0.3s',
-            color: messageLiked ? "primary.main" : "black",
+          {message.hasOwnProperty('liked') && user && message.content && <ThumbUpOffAltIcon onClick={toggleLikeMessage} sx={{transition: 'color 0.3s, transform 0.3s',
+            color: liked ? "primary.main" : "black",
             '&:hover': {
               color: "primary.main", // Change color on hover
               transform: 'scale(1.1)', // Slightly enlarge on hover
