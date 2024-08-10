@@ -26,6 +26,14 @@ export default function Explore() {
   const [historyConvos, setHistoryConvos] = useState<any>(null)
 
 
+  interface ChatbotsData {
+    id: string;
+    description: string;
+    likes: number;
+    name: string;
+    prompt: string;
+  }
+
   const [loading, setLoading] = useState<boolean>(true)
   useEffect(() => {
     const fetchAllChatBots = async () => {
@@ -35,6 +43,11 @@ export default function Explore() {
           id: doc.id,
           ...doc.data(),
         }));
+        console.log(chatbotsData)
+        chatbotsData.forEach((bot) => {
+          console.log(bot);
+        });
+        
         setChatbots(chatbotsData);
       } catch (error) {
         console.error('Error fetching chatbots:', error);
@@ -79,8 +92,8 @@ export default function Explore() {
         <Stack spacing={8}>
           {/* Displays all chatbots */}
           {loading && <LoadingScreen/>}
-          {!loading && chatBots && chatBots.map((chatbot: { id: string; likes: number; name: string; description: string }, index:number) => (
-            <ChatbotCard key={chatbot.id} chatbotDescription={chatbot.description} chatbotLikes={chatbot.likes} chatbotName={chatbot.name} reverse={index % 2 ? true : false}/>
+          {!loading && chatBots && chatBots.map((chatbot: { id: string; likes: number; name: string; description: string, prompt: string }, index:number) => (
+            <ChatbotCard key={chatbot.id} chatbotDescription={chatbot.description} chatbotLikes={chatbot.likes} chatbotName={chatbot.name} chatbotPrompt={chatbot.prompt} reverse={index % 2 ? true : false}/>
           ))}
         </Stack>
       </Box>

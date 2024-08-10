@@ -18,6 +18,7 @@ import { Conversation } from "@/types/conversation";
 import { Message } from "@/types/message";
 import { Bot } from "@/types/bot";
 
+
 export async function saveUserToDatabase(user: User) {
   await setDoc(
     doc(db, "users", user.uid),
@@ -34,7 +35,6 @@ export async function getChatbot(name: string): Promise<Bot | null> {
   try {
     // Reference the document with the ID that matches the name parameter
     const chatbotDocRef = doc(db, "chatbots", name);
-
     // Fetch the document
     const docSnapshot = await getDoc(chatbotDocRef);
 
@@ -48,6 +48,7 @@ export async function getChatbot(name: string): Promise<Bot | null> {
         name: data.name,
         description: data.description,
         likes: data.likes || 0,
+        prompt: data.prompt,
       };
 
       return chatbot;

@@ -3,6 +3,7 @@ export interface Bot {
     name: string;
     description: string;
     likes: number;
+    prompt: string;
     // icon?: string; // b64 encoded image
     // model?: string; // bot model
 

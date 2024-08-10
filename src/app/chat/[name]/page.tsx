@@ -32,7 +32,7 @@ const initialMessages: Message[] = [
   {
     role: "assistant",
     content:
-      "Hi! I'm the Headstarter support assistant. How can I help you today?",
+      "Hi! How can I help you today?",
   },
 ];
 
@@ -46,10 +46,14 @@ export default function ChatPage({ params }: { params: { name: string } }) {
   const messagesEndRef = useRef(null);
   const lastMessageRef = useRef<Message | null>(null);
 
+  const [currentPrompt, setCurrentPrompt] = useState("");
   useEffect(() => {
     const fetchCurrentChatbot = async () => {
       const botRef = await getChatbot(params.name);
+      const prompt = botRef?.prompt;
       setCurrentChatbot(botRef);
+      setCurrentPrompt(prompt || "");
+      
     };
     const fetchChatHistory = async () => {
       if (user) {
@@ -116,11 +120,12 @@ export default function ChatPage({ params }: { params: { name: string } }) {
     setIsLoading(true);
     
     setMessage(""); // Clear the input field
+
     const newMessages: Message[] = [
-      ...messages,
-      { role: "user", content: message },
-      { role: "assistant", content: "", liked: false },
-    ];
+        ...messages,
+        { role: "user", content: message },
+        { role: "assistant", content: "", liked: false },
+      ];
     
     const lastMessageIndex = newMessages.length - 1;
     setMessages(newMessages);
@@ -130,8 +135,12 @@ export default function ChatPage({ params }: { params: { name: string } }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          
         },
-        body: JSON.stringify(newMessages),
+        body: JSON.stringify([...messages, { role: "user", content: message, prompt: currentPrompt,
+          botname:params.name,
+          
+         }]),
       });
 
       if (!response.ok) {
