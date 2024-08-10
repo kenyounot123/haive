@@ -104,7 +104,7 @@ export default function Explore() {
           <Box sx={{display: "flex", justifyContent:"space-between", alignItems:"center",filter: user ? 'none' : 'blur(3px)'}}>
             <Typography sx={{fontWeight: 'bold', color:"white"}} variant="h4">History</Typography>
             {/* Not sure where this should redirect to yet */}
-            <Link href="/chat/chefai">
+            <Link href="#">
               <Typography sx={{fontWeight: 'light', color:"white", textDecoration: "underline"}}>See all</Typography>
             </Link>
           </Box>
