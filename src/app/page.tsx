@@ -3,8 +3,8 @@
 import { Button, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/providers";
-import { createExploreChatbot, createChatHistory } from "./action";
 import Link from "next/link";
+import Image from "next/image";
 
 import HiveRounded from '@mui/icons-material/Hive';
 
@@ -18,28 +18,30 @@ export default function LandingPage() {
 
   return (
     <>
-      <div className="header">
-        <div className="logo">
-          <HiveRounded style={{ fontSize: 40 }} sx={{
-            color: "primary.main"
-          }}/>
-          <div className="logo-text">
-            <header>
-              <Typography variant="h3">
-                h<span className="highlight">AI</span>ve
-              </Typography>
-            </header>
+      <nav className="navbar">
+        <div className="header">
+          <div className="logo">
+            <HiveRounded style={{ fontSize: 40 }} sx={{
+              color: "primary.main"
+            }}/>
+            <div className="logo-text">
+              <header>
+                <Typography variant="h3">
+                  h<span className="highlight">AI</span>ve
+                </Typography>
+              </header>
+            </div>
+          </div>
+          <div>
+          <Button className="login-button" variant="outlined" sx={{ color: "white", display: { xs: 'none', sm: 'block' } }} onClick={handleSignIn}>
+              Login
+            </Button>
+            <Button className="menu-button" variant="outlined" sx={{ color: "white", display: { xs: 'block', sm: 'none' } }}>
+              Menu
+            </Button>
           </div>
         </div>
-        <div>
-          <Button className="login-button" variant="outlined" sx={{fontSize:20, color: "white"}} onClick={handleSignIn}>
-            Login 
-          </Button>
-          <Button className="menu-button" variant="outlined" sx={{fontSize:20, color: "white"}}>
-            Menu 
-          </Button>
-        </div>
-      </div>
+      </nav>
 
       <section className="main">
         <div>
@@ -69,7 +71,9 @@ export default function LandingPage() {
         </div>
       </section>
       <section className="img-container">
-        <div className="empty"></div>
+        <div className="empty">
+          <Image style={{width:"100%", height:"100%", borderRadius:"0.25em", objectFit: "fill"}} width={0} height={0} alt={"Chat bot"} src={"/chatbot-ai.gif"}></Image>
+        </div>
       </section>
     </>
   );

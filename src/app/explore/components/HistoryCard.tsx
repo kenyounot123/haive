@@ -9,7 +9,6 @@ interface HistoryCardProps {
 }
 export default function HistoryCard({chatTitle, chatbotName}: HistoryCardProps) {
   return (
-    // update path to /chat/[id]
       <Link href={`/chat/${chatbotName}`}>
         <Box sx={{
           mt:2,
@@ -25,7 +24,6 @@ export default function HistoryCard({chatTitle, chatbotName}: HistoryCardProps) 
             color: 'black'
           }}}>
           <MessageOutlinedIcon/>
-          {/* This should be the title of chat */}
           <Typography>{chatTitle}</Typography>
           <CallMadeOutlinedIcon/>
         </Box>
