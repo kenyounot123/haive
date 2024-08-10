@@ -2,17 +2,17 @@ import {NextRequest, NextResponse} from 'next/server' // Import NextResponse fro
 import OpenAI from 'openai' // Import OpenAI library for interacting with the OpenAI API
 
 // System prompt for the AI, providing guidelines on how to respond to users
-const systemPrompt = ""// Use your own system prompt here
+const systemPrompt = "You are a masterchef. Your name is CookAI, and you are well versed in culinary techniques, recipes and an expert in cooking. you will answer to any user's questions related to cooking in a accurate and precise manner. Refer to the chat history and relevant documents to formulate your answer."
 
 // POST function to handle incoming requests
 export async function POST(req: NextRequest) {
-  const openai = new OpenAI() // Create a new instance of the OpenAI client
+  const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY}) // Create a new instance of the OpenAI client
   const data = await req.json() // Parse the JSON body of the incoming request
 
   // Create a chat completion request to the OpenAI API
   const completion = await openai.chat.completions.create({
     messages: [{role: 'system', content: systemPrompt}, ...data], // Include the system prompt and user messages
-    model: 'gpt-4o', // Specify the model to use
+    model: 'gpt-3.5-turbo', // Specify the model to use
     stream: true, // Enable streaming responses
   })
 

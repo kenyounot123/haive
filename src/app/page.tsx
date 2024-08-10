@@ -1,143 +1,80 @@
 "use client";
 
-import { Box, Button, Stack, TextField } from "@mui/material";
-import { useState, useRef, useEffect } from "react";
+import { Button, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/providers";
+import Link from "next/link";
+import Image from "next/image";
 
-export default function Home() {
-  const [messages, setMessages] = useState([
-    {
-      role: "assistant",
-      content:
-        "Hi! I'm the Headstarter support assistant. How can I help you today?",
-    },
-  ]);
-  const [message, setMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef(null);
+import HiveRounded from '@mui/icons-material/Hive';
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+export default function LandingPage() {
+  const router = useRouter();
+  const { user, signInWithGoogle } = useAuth();
 
-  const sendMessage = async () => {
-    if (!message.trim() || isLoading) return;
-    setIsLoading(true);
-
-    // We'll implement this function in the next section
-    setMessage(""); // Clear the input field
-    setMessages((messages) => [
-      ...messages,
-      { role: "user", content: message }, // Add the user's message to the chat
-      { role: "assistant", content: "" }, // Add a placeholder for the assistant's response
-    ]);
-
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify([...messages, { role: "user", content: message }]),
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const text = decoder.decode(value, { stream: true });
-        setMessages((messages) => {
-          let lastMessage = messages[messages.length - 1];
-          let otherMessages = messages.slice(0, messages.length - 1);
-          return [
-            ...otherMessages,
-            { ...lastMessage, content: lastMessage.content + text },
-          ];
-        });
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setMessages((messages) => [
-        ...messages,
-        {
-          role: "assistant",
-          content:
-            "I'm sorry, but I encountered an error. Please try again later.",
-        },
-      ]);
-    }
-    setIsLoading(false);
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  function handleSignIn() {
+    signInWithGoogle().then(() => router.push("/explore"));
+  }
 
   return (
-    <Box
-      width="100vw"
-      height="100vh"
-      display="flex"
-      flexDirection="column"
-      justifyContent="center"
-      alignItems="center"
-    >
-      <Stack
-        direction={"column"}
-        width="500px"
-        height="700px"
-        border="1px solid black"
-        p={2}
-        spacing={3}
-      >
-        <Stack
-          direction={"column"}
-          spacing={2}
-          flexGrow={1}
-          overflow="auto"
-          maxHeight="100%"
-        >
-          {messages.map((message, index) => (
-            <Box
-              key={index}
-              display="flex"
-              justifyContent={
-                message.role === "assistant" ? "flex-start" : "flex-end"
-              }
-            >
-              <Box
-                bgcolor={
-                  message.role === "assistant"
-                    ? "primary.main"
-                    : "secondary.main"
-                }
-                color="white"
-                borderRadius={16}
-                p={3}
-              >
-                {message.content}
-              </Box>
-            </Box>
-          ))}
-          <div ref={messagesEndRef} />
-        </Stack>
-        <Stack direction={"row"} spacing={2}>
-          <TextField
-            label="Message"
-            fullWidth
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-          <Button variant="contained" onClick={sendMessage}>
-            Send
-          </Button>
-        </Stack>
-      </Stack>
-    </Box>
+    <>
+      <nav className="navbar">
+        <div className="header">
+          <div className="logo">
+            <HiveRounded style={{ fontSize: 40 }} sx={{
+              color: "primary.main"
+            }}/>
+            <div className="logo-text">
+              <header>
+                <Typography variant="h3">
+                  h<span className="highlight">AI</span>ve
+                </Typography>
+              </header>
+            </div>
+          </div>
+          <div>
+          <Button className="login-button" variant="outlined" sx={{ color: "white", display: { xs: 'none', sm: 'block' } }} onClick={handleSignIn}>
+              Login
+            </Button>
+            <Button className="menu-button" variant="outlined" sx={{ color: "white", display: { xs: 'block', sm: 'none' } }}>
+              Menu
+            </Button>
+          </div>
+        </div>
+      </nav>
+
+      <section className="main">
+        <div>
+          <h1 className="lp text-bold">
+            <span>Unlock the{" "}</span>
+            <span>
+              Ultimate <b className="highlight">AI</b>
+            </span>
+            <br className="line-break"></br>
+            <span>
+              <b className="highlight">Chatbot{" "}</b>
+            </span>
+            <span>Experience</span>
+          </h1>
+          <p style={{
+            color: "white"
+          }}>
+            Discover the ultimate AI chatbot experience with Haive where expert{" "}
+            <br />
+            ChatBots provide instant, specialized insights just for you.
+          </p>
+          <Link href={"/explore"}>
+            <Button sx={{fontSize:24, mt:2, fontWeight:700}} variant="contained">
+              Explore
+            </Button>
+          </Link>
+        </div>
+      </section>
+      <section className="img-container">
+        <div className="empty">
+          <Image style={{width:"100%", height:"100%", borderRadius:"0.25em", objectFit: "fill"}} width={0} height={0} alt={"Chat bot"} src={"/chatbot-ai.gif"}></Image>
+        </div>
+      </section>
+    </>
   );
 }
