@@ -26,10 +26,11 @@ export function BotMessage({
   const [liked, setLiked] = useState(message.liked || false);
   const { user } = useAuth()
   
+  console.log(message.liked)
   const toggleLikeMessage = async () => {
     setLiked(!message.liked)
-    message.liked = !message.liked
     await updateChatbotLikes(bot, !message.liked)
+    message.liked = !message.liked
   }
   return (
     <Box sx={{

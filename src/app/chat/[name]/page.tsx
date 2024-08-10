@@ -44,6 +44,7 @@ export default function ChatPage({ params }: { params: { name: string } }) {
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const lastMessageRef = useRef<Message | null>(null);
 
   useEffect(() => {
     const fetchCurrentChatbot = async () => {
@@ -99,24 +100,30 @@ export default function ChatPage({ params }: { params: { name: string } }) {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const saveMessage: Message = { role: "user", content: message}
+    if (user) {
+      addMessageToHistory(user?.uid, params.name, saveMessage).then(() => sendMessage())
+    } else {
+      sendMessage()
+    }
+  }
+
+
   const sendMessage = async () => {
     if (!message.trim() || isLoading) return;
     setIsLoading(true);
-
+    
     setMessage(""); // Clear the input field
-    setMessages((messages) => [
+    const newMessages: Message[] = [
       ...messages,
-      { role: "user", content: message }, // Add the user's message to the chat
-      { role: "assistant", content: "", liked: false }, // Add a placeholder for the assistant's response
-    ]);
-
-    // Problem with this is that it does not save the 
-    if (user) {
-      await addMessageToHistory(user.uid, params.name, {
-        role: "user",
-        content: message,
-      });
-    }
+      { role: "user", content: message },
+      { role: "assistant", content: "", liked: false },
+    ];
+    
+    const lastMessageIndex = newMessages.length - 1;
+    setMessages(newMessages);
 
     try {
       const response = await fetch("/api/chat", {
@@ -124,7 +131,7 @@ export default function ChatPage({ params }: { params: { name: string } }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify([...messages, { role: "user", content: message }]),
+        body: JSON.stringify(newMessages),
       });
 
       if (!response.ok) {
@@ -136,25 +143,26 @@ export default function ChatPage({ params }: { params: { name: string } }) {
 
       while (true) {
         const { done, value } = await (
-          reader as ReadableStreamDefaultReader
+          reader as ReadableStreamDefaultReader<Uint8Array>
         ).read();
-        if (done) {
-          if (user) {
-            // end of stream, save last message to db
-            const lastMessage = messages[messages.length - 1];
-            await addMessageToHistory(user.uid, params.name, lastMessage);
-          }
-          break;
-        }
+        if (done) break;
+
         const text = decoder.decode(value, { stream: true });
-        setMessages((messages) => {
-          let lastMessage = messages[messages.length - 1];
-          let otherMessages = messages.slice(0, messages.length - 1);
-          return [
-            ...otherMessages,
-            { ...lastMessage, content: lastMessage.content + text },
-          ];
+
+        setMessages((prevMessages) => {
+          const updatedMessages = [...prevMessages];
+          updatedMessages[lastMessageIndex] = {
+            ...updatedMessages[lastMessageIndex],
+            content: updatedMessages[lastMessageIndex].content + text,
+          };
+
+          lastMessageRef.current = updatedMessages[lastMessageIndex];
+          return updatedMessages;
         });
+      }
+
+      if (user && lastMessageRef.current?.role === "assistant") {
+        await addMessageToHistory(user.uid, params.name, lastMessageRef.current);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -164,6 +172,7 @@ export default function ChatPage({ params }: { params: { name: string } }) {
           role: "assistant",
           content:
             "I'm sorry, but I encountered an error. Please try again later.",
+          liked: false,
         },
       ]);
       if (user) {
@@ -171,17 +180,11 @@ export default function ChatPage({ params }: { params: { name: string } }) {
           role: "assistant",
           content:
             "I'm sorry, but I encountered an error. Please try again later.",
+          liked: false,
         };  
-        // console.log(user.uid, params.name, lastMessage);
         await addMessageToHistory(user.uid, params.name, lastMessage);
       }
-    }  finally {
-        if (user) {
-          // end of stream, save last message to db
-          const lastMessage = messages[messages.length - 1];
-          await addMessageToHistory(user.uid, params.name, lastMessage);
-        }
-    }
+    } 
 
     setIsLoading(false);
   };
@@ -282,10 +285,7 @@ export default function ChatPage({ params }: { params: { name: string } }) {
 
       <Box
         component={"form"}
-        onSubmit={(e) => {
-          e.preventDefault();
-          sendMessage();
-        }}
+        onSubmit={(e) => handleSubmit(e)}
         sx={{
           display: "flex",
           gap: 1,
@@ -311,7 +311,7 @@ export default function ChatPage({ params }: { params: { name: string } }) {
         />
         <Button
           variant="contained"
-          onClick={sendMessage}
+          onClick={(e) => handleSubmit(e)}
           sx={{
             backgroundColor: "primary.main",
             color: "black",
