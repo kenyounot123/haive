@@ -7,7 +7,7 @@ import "./globals.css";
 const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Haive | The Ultimate AI Chatbot",
+  title: "Haive — Expert AI Chatbots",
   description:
     "Discover the ultimate AI chatbot experience with Haive where expert HiveBots provide instant, specialized insights just for you",
 };
